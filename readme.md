@@ -1,1 +1,1 @@
-Hello world DEV on MASTER
+Hello world DEV on MASTER from GitHub
