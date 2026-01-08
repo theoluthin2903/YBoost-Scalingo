@@ -6,5 +6,27 @@
 </head>
 <body>
     <h1>Hello le monde !</h1>
+    <div class="theme-toggle">
+        <button id="theme-toggle-btn">🌙</button>
+    </div>
+    <script>
+        const themeToggleBtn = document.getElementById('theme-toggle-btn');
+        const body = document.body;
+
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme) {
+            body.classList.add(currentTheme);
+            if (currentTheme === 'light-mode') {
+                themeToggleBtn.textContent = '☀️';
+            }
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            const theme = body.classList.contains('light-mode') ? 'light-mode' : '';
+            localStorage.setItem('theme', theme);
+            themeToggleBtn.textContent = body.classList.contains('light-mode') ? '☀️' : '🌙';
+        });
+    </script>
 </body>
 </html>
