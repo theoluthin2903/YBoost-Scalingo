@@ -5,6 +5,10 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Erreur {{.Status}}: {{.Message}}</h1>
+    <main class="container">
+        <h1 style="color: var(--text-blue);">Erreur {{.Status}}</h1>
+        <p style="color: var(--text-yellow);">{{.Message}}</p>
+        <a href="/" class="reset-button" style="text-decoration: none;">Retour au jeu</a>
+    </main>
 </body>
 </html>
