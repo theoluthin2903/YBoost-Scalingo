@@ -1,32 +1,48 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
+
 <head>
-    <title>YBoost-Scalingo</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morpion (Tic-Tac-Toe) - Théo Luthin</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
 </head>
+
 <body>
-    <h1>Hello le monde !</h1>
-    <div class="theme-toggle">
-        <button id="theme-toggle-btn">🌙</button>
-    </div>
-    <script>
-        const themeToggleBtn = document.getElementById('theme-toggle-btn');
-        const body = document.body;
+    <header>
+        <nav>
+            <button id="theme-switcher">☀️ Mode Clair</button>
+        </nav>
+    </header>
 
-        const currentTheme = localStorage.getItem('theme');
-        if (currentTheme) {
-            body.classList.add(currentTheme);
-            if (currentTheme === 'light-mode') {
-                themeToggleBtn.textContent = '☀️';
-            }
-        }
+    <main class="container">
+        <section class="game-container skills-projects"> 
+            <h2>Morpion (Tic-Tac-Toe) - 1v1</h2>
+            
+            <div id="status-message" class="status-message">
+                Au tour de : <span id="current-player">X</span>
+            </div>
 
-        themeToggleBtn.addEventListener('click', () => {
-            body.classList.toggle('light-mode');
-            const theme = body.classList.contains('light-mode') ? 'light-mode' : '';
-            localStorage.setItem('theme', theme);
-            themeToggleBtn.textContent = body.classList.contains('light-mode') ? '☀️' : '🌙';
-        });
-    </script>
+            <div class="morpion-grid" id="morpion-grid">
+                <div class="cell" data-index="0" data-key="7"></div>
+                <div class="cell" data-index="1" data-key="8"></div>
+                <div class="cell" data-index="2" data-key="9"></div>
+                <div class="cell" data-index="3" data-key="4"></div>
+                <div class="cell" data-index="4" data-key="5"></div>
+                <div class="cell" data-index="5" data-key="6"></div>
+                <div class="cell" data-index="6" data-key="1"></div>
+                <div class="cell" data-index="7" data-key="2"></div>
+                <div class="cell" data-index="8" data-key="3"></div>
+            </div>
+
+            <button id="reset-button" class="reset-button">Rejouer</button>
+        </section>
+    </main>
+
+    <footer>
+        © 2025 Théo Luthin — Tous droits réservés
+    </footer>
 </body>
+
 </html>
