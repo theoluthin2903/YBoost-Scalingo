@@ -46,6 +46,7 @@ func errorHandler(w http.ResponseWriter, r *http.Request, status int) {
 	err = tmpl.Execute(w, data)
 	if err != nil {
 		log.Println("Erreur exécution template error.html:", err)
+		http.Error(w, "Erreur interne", http.StatusInternalServerError)
 	}
 }
 
@@ -60,7 +61,7 @@ func main() {
 		port = os.Getenv("PORT")
 	}
 
-	log.Println("Serveur démarré sur http://localhost:" + port)
+	log.Println("Serveur démarré sur port", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 
 }
