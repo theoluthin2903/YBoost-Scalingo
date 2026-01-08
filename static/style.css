@@ -1,13 +1,31 @@
 body {
-    background-color: #ffff00;
-    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #000000, #1a1a1a);
+    font-family: 'Courier New', monospace;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    margin: 0;
+    color: #00ff00;
 }
 
 h1 {
-    color: #ff0000;
+    color: #00ff00;
     text-align: center;
+    font-size: 3em;
+    text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+    border: 2px solid #00ff00;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+    }
+    to {
+        text-shadow: 0 0 20px #00ff00, 0 0 30px #00ff00, 0 0 40px #00ff00;
+    }
 }
