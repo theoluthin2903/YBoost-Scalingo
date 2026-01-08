@@ -1,12 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
     const themeSwitcher = document.getElementById('theme-switcher');
     const savedTheme = localStorage.getItem('theme') || 'dark';
-    document.body.classList.add(savedTheme + '-mode');
+    
+    const applyTheme = (theme) => {
+        document.body.classList.remove('light-mode', 'dark-mode');
+        document.body.classList.add(theme + '-mode');
+        themeSwitcher.textContent = theme === 'light' ? '🌙' : '☀️';
+    };
+
+    applyTheme(savedTheme);
 
     themeSwitcher.addEventListener('click', () => {
         const newTheme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
-        document.body.classList.remove('light-mode', 'dark-mode');
-        document.body.classList.add(newTheme + '-mode');
+        applyTheme(newTheme);
         localStorage.setItem('theme', newTheme);
     });
 

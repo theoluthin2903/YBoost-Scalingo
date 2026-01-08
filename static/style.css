@@ -1,5 +1,5 @@
 :root {
-    --bg-primary: #252a4a;
+    --bg-primary: #1e213a;
     --text-blue: #4a90e2;
     --text-yellow: #ffcc00;
     --grid-border: #4a90e2;
@@ -16,30 +16,60 @@ body.light-mode {
 
 body {
     background-color: var(--bg-primary);
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Arial, sans-serif;
     margin: 0;
     color: white;
     display: flex;
     flex-direction: column;
     height: 100vh;
+    transition: background 0.3s;
 }
 
 header {
-    text-align: center;
-    padding: 20px 0;
+    padding: 15px 20px;
+}
+
+.header-top {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 header h2 {
     color: var(--text-blue);
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     margin: 0;
+}
+
+.theme-circle {
+    position: absolute;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background-color: var(--text-yellow);
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+}
+
+.theme-circle:hover {
+    transform: scale(1.1);
 }
 
 .separator {
     height: 1px;
     background: rgba(255, 255, 255, 0.1);
-    width: 90%;
-    margin: 15px auto;
+    width: 100%;
+    margin-top: 15px;
 }
 
 .game-container {
@@ -52,31 +82,33 @@ header h2 {
 
 .status-message {
     color: var(--text-yellow);
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     font-weight: bold;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
+    text-align: center;
 }
 
 .morpion-grid {
     display: grid;
-    grid-template-columns: repeat(3, 110px);
-    grid-template-rows: repeat(3, 110px);
-    gap: 8px;
-    padding: 10px;
+    grid-template-columns: repeat(3, 120px);
+    grid-template-rows: repeat(3, 120px);
+    gap: 10px;
+    padding: 12px;
     border: 3px solid var(--grid-border);
     border-radius: 12px;
-    box-shadow: 0 0 15px rgba(74, 144, 226, 0.3);
+    box-shadow: 0 0 20px rgba(74, 144, 226, 0.3);
 }
 
 .cell {
     background-color: var(--cell-bg);
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 3rem;
+    font-size: 3.5rem;
     font-weight: bold;
+    transition: background-color 0.2s;
 }
 
 .cell.x::after { content: "X"; color: var(--text-blue); }
@@ -84,35 +116,32 @@ header h2 {
 
 .cell.win {
     background-color: rgba(74, 144, 226, 0.2);
-    box-shadow: inset 0 0 10px var(--text-blue);
+    box-shadow: inset 0 0 15px var(--text-blue);
 }
 
 .reset-button {
     background-color: var(--text-blue);
     color: white;
     border: none;
-    padding: 8px 20px;
-    margin-top: 30px;
-    border-radius: 4px;
+    padding: 10px 25px;
+    margin-top: 40px;
+    border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
-}
-
-#theme-switcher {
-    position: fixed;
-    bottom: 15px;
-    right: 15px;
-    background: var(--text-yellow);
-    border: none;
-    padding: 5px 12px;
-    border-radius: 15px;
-    cursor: pointer;
-    font-size: 0.8rem;
+    font-size: 1rem;
 }
 
 footer {
     text-align: center;
-    padding: 15px;
-    font-size: 0.8rem;
-    opacity: 0.5;
+    padding: 20px;
+    font-size: 0.85rem;
+    opacity: 0.6;
+}
+
+@media (max-width: 500px) {
+    .morpion-grid {
+        grid-template-columns: repeat(3, 90px);
+        grid-template-rows: repeat(3, 90px);
+    }
+    header h2 { font-size: 1.2rem; }
 }
