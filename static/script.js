@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const applyTheme = (theme) => {
         document.body.classList.remove('light-mode', 'dark-mode');
         document.body.classList.add(theme + '-mode');
-        themeSwitcher.textContent = theme === 'light' ? '🌙' : '☀️';
+        themeSwitcher.textContent = theme === 'light' ? '☀️' : '🌙';
     };
 
     applyTheme(savedTheme);
