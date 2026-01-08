@@ -20,6 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
     let board = Array(9).fill("");
     let gameActive = true;
+    
+    const perfectMoveProbability = 0.5; 
 
     const checkWin = (b, p) => wins.some(s => s.every(i => b[i] === p));
     const isFull = (b) => !b.includes("");
@@ -54,19 +56,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const aiMove = () => {
         if (!gameActive) return;
-        let bestVal = -Infinity;
+
+        const emptyIndices = board.map((v, i) => v === "" ? i : null).filter(v => v !== null);
         let move = -1;
-        for (let i = 0; i < 9; i++) {
-            if (board[i] === "") {
-                board[i] = "O";
-                let val = minimax(board, 0, false);
-                board[i] = "";
-                if (val > bestVal) {
-                    bestVal = val;
-                    move = i;
+
+        if (Math.random() < perfectMoveProbability) {
+            let bestVal = -Infinity;
+            for (let i = 0; i < 9; i++) {
+                if (board[i] === "") {
+                    board[i] = "O";
+                    let val = minimax(board, 0, false);
+                    board[i] = "";
+                    if (val > bestVal) {
+                        bestVal = val;
+                        move = i;
+                    }
                 }
             }
+        } else {
+            move = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
         }
+
         if (move !== -1) {
             board[move] = "O";
             cells[move].classList.add('o');
