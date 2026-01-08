@@ -4,6 +4,10 @@
     --text-yellow: #ffcc00;
     --grid-border: #4a90e2;
     --cell-bg: #2d325a;
+    /* Couleurs de victoire (Mode Sombre) */
+    --win-bg: #ffcc00;
+    --win-text: #1e213a;
+    --win-shadow: rgba(255, 204, 0, 0.6);
 }
 
 body.light-mode {
@@ -12,22 +16,26 @@ body.light-mode {
     --text-yellow: #d97706;
     --grid-border: #0056b3;
     --cell-bg: #ffffff;
+    /* Couleurs de victoire (Mode Clair) */
+    --win-bg: #0056b3;
+    --win-text: #ffffff;
+    --win-shadow: rgba(0, 86, 179, 0.4);
 }
 
 body {
     background-color: var(--bg-primary);
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     color: white;
     display: flex;
     flex-direction: column;
     height: 100vh;
-    transition: background 0.3s;
+    transition: background 0.3s ease;
+    overflow: hidden;
 }
 
-header {
-    padding: 15px 20px;
-}
+/* Header & Theme Switcher */
+header { padding: 15px 20px; }
 
 .header-top {
     display: flex;
@@ -38,32 +46,26 @@ header {
     margin: 0 auto;
 }
 
-header h2 {
-    color: var(--text-blue);
-    font-size: 1.6rem;
-    margin: 0;
-}
+header h2 { color: var(--text-blue); font-size: 1.6rem; margin: 0; }
 
 .theme-circle {
     position: absolute;
     right: 0;
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     border: none;
     background-color: var(--text-yellow);
     cursor: pointer;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    transition: transform 0.2s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.theme-circle:hover {
-    transform: scale(1.1);
-}
+.theme-circle:hover { transform: scale(1.1); }
 
 .separator {
     height: 1px;
@@ -72,6 +74,7 @@ header h2 {
     margin-top: 15px;
 }
 
+/* Game Area */
 .game-container {
     flex: 1;
     display: flex;
@@ -84,64 +87,74 @@ header h2 {
     color: var(--text-yellow);
     font-size: 1.5rem;
     font-weight: bold;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
+    height: 2rem;
     text-align: center;
 }
 
 .morpion-grid {
     display: grid;
-    grid-template-columns: repeat(3, 120px);
-    grid-template-rows: repeat(3, 120px);
-    gap: 10px;
-    padding: 12px;
+    grid-template-columns: repeat(3, 110px);
+    grid-template-rows: repeat(3, 110px);
+    gap: 12px;
+    padding: 15px;
     border: 3px solid var(--grid-border);
-    border-radius: 12px;
-    box-shadow: 0 0 20px rgba(74, 144, 226, 0.3);
+    border-radius: 15px;
+    background-color: rgba(0, 0, 0, 0.1);
 }
 
 .cell {
     background-color: var(--cell-bg);
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 3.5rem;
     font-weight: bold;
-    transition: background-color 0.2s;
+    transition: all 0.2s ease;
+}
+
+.cell:hover:not(.x):not(.o) {
+    background-color: rgba(74, 144, 226, 0.1);
 }
 
 .cell.x::after { content: "X"; color: var(--text-blue); }
 .cell.o::after { content: "O"; color: var(--text-yellow); }
 
+/* Mise en évidence de la victoire */
 .cell.win {
-    background-color: rgba(74, 144, 226, 0.2);
-    box-shadow: inset 0 0 15px var(--text-blue);
+    background-color: var(--win-bg) !important;
+    transform: scale(1.08);
+    z-index: 10;
+    box-shadow: 0 0 20px var(--win-shadow);
 }
 
+.cell.win.x::after, .cell.win.o::after {
+    color: var(--win-text) !important;
+}
+
+/* UI Elements */
 .reset-button {
     background-color: var(--text-blue);
     color: white;
     border: none;
-    padding: 10px 25px;
-    margin-top: 40px;
-    border-radius: 5px;
+    padding: 12px 30px;
+    margin-top: 35px;
+    border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
     font-size: 1rem;
+    transition: opacity 0.2s;
 }
 
-footer {
-    text-align: center;
-    padding: 20px;
-    font-size: 0.85rem;
-    opacity: 0.6;
-}
+.reset-button:hover { opacity: 0.9; }
 
-@media (max-width: 500px) {
+footer { text-align: center; padding: 20px; font-size: 0.85rem; opacity: 0.6; color: var(--text-blue); }
+
+@media (max-width: 400px) {
     .morpion-grid {
         grid-template-columns: repeat(3, 90px);
         grid-template-rows: repeat(3, 90px);
     }
-    header h2 { font-size: 1.2rem; }
 }
