@@ -7,26 +7,41 @@ body {
     height: 100vh;
     margin: 0;
     color: #00ff00;
+    --bg-primary: linear-gradient(135deg, #000000, #1a1a1a);
+    --text-primary: #00ff00;
+    --accent: #00ff00;
+    --accent-hover: #00aa00;
+    --card-bg: rgba(0, 0, 0, 0.5);
+}
+
+body.light-mode {
+    background: linear-gradient(135deg, #ffffff, #f0f0f0);
+    color: #000000;
+    --bg-primary: linear-gradient(135deg, #ffffff, #f0f0f0);
+    --text-primary: #000000;
+    --accent: #007bff;
+    --accent-hover: #0056b3;
+    --card-bg: rgba(255, 255, 255, 0.8);
 }
 
 h1 {
-    color: #00ff00;
+    color: var(--text-primary);
     text-align: center;
     font-size: 3em;
-    text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
-    border: 2px solid #00ff00;
+    text-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent), 0 0 30px var(--accent);
+    border: 2px solid var(--accent);
     padding: 20px;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--card-bg);
     border-radius: 10px;
     animation: glow 2s ease-in-out infinite alternate;
 }
 
 @keyframes glow {
     from {
-        text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+        text-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent), 0 0 30px var(--accent);
     }
     to {
-        text-shadow: 0 0 20px #00ff00, 0 0 30px #00ff00, 0 0 40px #00ff00;
+        text-shadow: 0 0 20px var(--accent), 0 0 30px var(--accent), 0 0 40px var(--accent);
     }
 }
 
