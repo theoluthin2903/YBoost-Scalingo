@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return best;
         }
     };
-
+    
     const endTurn = () => {
         const result = getWinner(board);
         if (result) {
@@ -134,10 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     window.addEventListener('keydown', (e) => {
-        if (e.key.toLowerCase() === 'r' || e.key === 'Enter') {
-            e.preventDefault();
-            reset();
-        }
+        if (e.key.toLowerCase() === 'r') reset();
         const idx = keyMap[e.code] ?? keyMap[e.key];
         if (idx !== undefined) handlePlay(idx);
     });
