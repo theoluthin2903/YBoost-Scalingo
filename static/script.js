@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- GESTION DU THÈME ---
     const themeSwitcher = document.getElementById('theme-switcher');
     const savedTheme = localStorage.getItem('theme') || 'dark';
     
@@ -16,7 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('theme', next);
     });
 
-    // --- VARIABLES DU JEU ---
     const cells = document.querySelectorAll('.cell');
     const statusMsg = document.getElementById('status-message');
     const resetBtn = document.getElementById('reset-button');
@@ -24,9 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let board = Array(9).fill("");
     let gameActive = true;
-    const aiIntelligence = 0.50;
+    const aiIntelligence = 0.75;
 
-    // --- LOGIQUE DE VICTOIRE ---
     const getWinner = (b) => {
         for (let s of wins) {
             if (b[s[0]] && b[s[0]] === b[s[1]] && b[s[0]] === b[s[2]]) {
@@ -36,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return null;
     };
 
-    // --- ALGORITHME MINIMAX (IA IMBATTABLE) ---
     const minimax = (currBoard, depth, isMax) => {
         const res = getWinner(currBoard);
         if (res && res.p === "O") return 10 - depth;
@@ -88,7 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
         let move = -1;
         const empty = board.map((v, i) => v === "" ? i : null).filter(v => v !== null);
 
-        // Décision Aléatoire : Coup Parfait vs Coup au Hasard
         if (Math.random() < aiIntelligence) {
             let bestVal = -Infinity;
             for (let i = 0; i < 9; i++) {
@@ -127,7 +122,6 @@ document.addEventListener('DOMContentLoaded', () => {
         statusMsg.textContent = "C'est à vous, Théo !";
     };
 
-    // --- CONTRÔLES (CLAVIER & PAVÉ TACTILE) ---
     const keyMap = {
         "Numpad7": 0, "7": 0, "Home": 0,
         "Numpad8": 1, "8": 1, "ArrowUp": 1,
