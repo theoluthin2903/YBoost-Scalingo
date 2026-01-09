@@ -4,7 +4,6 @@
     --text-yellow: #ffcc00;
     --grid-border: #4a90e2;
     --cell-bg: #2d325a;
-    /* Couleurs de victoire (Mode Sombre) */
     --win-bg: #ffcc00;
     --win-text: #1e213a;
     --win-shadow: rgba(255, 204, 0, 0.6);
@@ -16,7 +15,6 @@ body.light-mode {
     --text-yellow: #d97706;
     --grid-border: #0056b3;
     --cell-bg: #ffffff;
-    /* Couleurs de victoire (Mode Clair) */
     --win-bg: #0056b3;
     --win-text: #ffffff;
     --win-shadow: rgba(0, 86, 179, 0.4);
@@ -34,7 +32,7 @@ body {
     overflow: hidden;
 }
 
-/* Header & Theme Switcher */
+
 header { padding: 15px 20px; }
 
 .header-top {
@@ -55,7 +53,8 @@ header h2 { color: var(--text-blue); font-size: 1.6rem; margin: 0; }
     height: 42px;
     border-radius: 50%;
     border: none;
-    background-color: var(--text-yellow);
+    border-color: 000000;
+    background-color: none;
     cursor: pointer;
     font-size: 1.3rem;
     display: flex;
@@ -74,7 +73,7 @@ header h2 { color: var(--text-blue); font-size: 1.6rem; margin: 0; }
     margin-top: 15px;
 }
 
-/* Game Area */
+
 .game-container {
     flex: 1;
     display: flex;
@@ -122,7 +121,6 @@ header h2 { color: var(--text-blue); font-size: 1.6rem; margin: 0; }
 .cell.x::after { content: "X"; color: var(--text-blue); }
 .cell.o::after { content: "O"; color: var(--text-yellow); }
 
-/* Mise en évidence de la victoire */
 .cell.win {
     background-color: var(--win-bg) !important;
     transform: scale(1.08);
@@ -134,7 +132,6 @@ header h2 { color: var(--text-blue); font-size: 1.6rem; margin: 0; }
     color: var(--win-text) !important;
 }
 
-/* UI Elements */
 .reset-button {
     background-color: var(--text-blue);
     color: white;
