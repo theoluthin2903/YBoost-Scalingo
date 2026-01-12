@@ -9,53 +9,38 @@ import (
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
-		errorHandler(w, r, http.StatusNotFound)
+		http.NotFound(w, r)
 		return
 	}
 
 	tmpl, err := template.ParseFiles("template/index.html")
 	if err != nil {
-		log.Println(err)
-		http.Error(w, "Erreur serveur", http.StatusInternalServerError)
+		log.Printf("ERREUR : Impossible de trouver index.html : %v", err)
+		http.Error(w, "Erreur interne (Template manquant)", http.StatusInternalServerError)
 		return
 	}
 
-	tmpl.Execute(w, nil)
-}
-
-func errorHandler(w http.ResponseWriter, r *http.Request, status int) {
-	w.WriteHeader(status)
-	tmpl, err := template.ParseFiles("template/error.html")
+	err = tmpl.Execute(w, nil)
 	if err != nil {
-		http.Error(w, http.StatusText(status), status)
-		return
+		log.Printf("ERREUR : Echec de l'exécution du template : %v", err)
 	}
-
-	data := struct {
-		Status  int
-		Message string
-	}{
-		Status:  status,
-		Message: http.StatusText(status),
-	}
-
-	tmpl.Execute(w, data)
 }
 
 func main() {
-	http.HandleFunc("/", homeHandler)
-
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
+	http.HandleFunc("/", homeHandler)
+
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "3000"
 	}
 
-	log.Println("Serveur lancé sur le port " + port)
+	log.Printf("Serveur démarré sur le port %s", port)
+
 	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("ERREUR FATALE (Le serveur n'a pas pu démarrer) : ", err)
 	}
 }
