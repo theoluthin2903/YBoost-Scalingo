@@ -4,12 +4,9 @@
     --text-yellow: #ffcc00;
     --grid-border: #4a90e2;
     --cell-bg: #2d325a;
-    
     --win-bg: #ffcc00;
     --win-text: #1e213a;
-    --win-shadow: rgba(255, 204, 0, 0.6);
-    
-    --score-color: #ffcc00; 
+    --score-color: #ffcc00; /* Jaune en mode sombre */
 }
 
 body.light-mode {
@@ -18,17 +15,14 @@ body.light-mode {
     --text-yellow: #d97706;
     --grid-border: #0056b3;
     --cell-bg: #ffffff;
-    
     --win-bg: #0056b3;
     --win-text: #ffffff;
-    --win-shadow: rgba(0, 86, 179, 0.4);
-
-    --score-color: #d97706; 
+    --score-color: #d97706; /* Orange en mode clair */
 }
 
 body {
     background-color: var(--bg-primary);
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
     margin: 0;
     color: white;
     display: flex;
@@ -38,188 +32,63 @@ body {
     overflow: hidden;
 }
 
-header {
-    padding: 15px 20px;
-}
-
-.header-top {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-header h2 {
-    color: var(--text-blue);
-    font-size: 1.6rem;
-    margin: 0;
-}
+header { padding: 15px 20px; }
+.header-top { display: flex; justify-content: center; align-items: center; position: relative; max-width: 800px; margin: 0 auto; }
+header h2 { color: var(--text-blue); font-size: 1.6rem; margin: 0; }
 
 .theme-circle {
-    position: absolute;
-    right: 0;
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    border: none;
-    background-color: var(--text-yellow);
-    color: var(--win-text);
-    cursor: pointer;
-    font-size: 1.2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    transition: transform 0.2s;
+    position: absolute; right: 0; width: 40px; height: 40px; border-radius: 50%;
+    border: none; background-color: var(--text-yellow); cursor: pointer;
+    font-size: 1.2rem; display: flex; justify-content: center; align-items: center;
 }
 
-.theme-circle:hover {
-    transform: scale(1.1);
-}
+.separator { height: 1px; background: rgba(255, 255, 255, 0.1); width: 100%; margin-top: 15px; }
 
-.separator {
-    height: 1px;
-    background: rgba(255, 255, 255, 0.1);
-    width: 100%;
-    margin-top: 15px;
-}
-
-.game-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-.score-board {
-    margin-bottom: 25px;
-}
-
+/* STYLE DU SCORE CORRIGÉ */
+.score-board { margin-bottom: 25px; }
 .score-display {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    font-size: 1.3rem;
-    font-weight: 800;
-    color: var(--score-color); /* Couleur dynamique ici */
+    display: flex; align-items: center; gap: 20px;
+    font-size: 1.3rem; font-weight: 800;
+    color: var(--score-color) !important; /* Force la couleur */
     text-transform: uppercase;
-    letter-spacing: 1px;
 }
 
 .score-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 8px 25px;
-    border: 3px solid var(--score-color); /* Bordure dynamique */
-    border-radius: 50px;
-    background: rgba(0, 0, 0, 0.1);
+    display: flex; align-items: center; gap: 10px; padding: 5px 25px;
+    border: 3px solid var(--score-color);
+    border-radius: 50px; background: rgba(0, 0, 0, 0.1);
     font-size: 2rem;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    color: var(--score-color) !important; /* Force la couleur des chiffres */
 }
 
-.score-divider {
-    opacity: 0.5;
+#score-human, #score-ai, .score-divider {
+    color: var(--score-color) !important;
 }
 
-.player-name {
-    min-width: 70px;
-    text-align: center;
-}
-
-.status-message {
-    color: var(--text-yellow);
-    font-size: 1.4rem;
-    font-weight: bold;
-    margin-bottom: 20px;
-    height: 1.6rem;
-    text-align: center;
-}
+/* GRILLE ET JEU */
+.game-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.status-message { color: var(--text-yellow); font-size: 1.4rem; font-weight: bold; margin-bottom: 20px; height: 1.6rem; }
 
 .morpion-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 110px);
-    grid-template-rows: repeat(3, 110px);
-    gap: 12px;
-    padding: 15px;
-    border: 3px solid var(--grid-border);
-    border-radius: 15px;
-    background-color: rgba(0, 0, 0, 0.05);
+    display: grid; grid-template-columns: repeat(3, 110px); grid-template-rows: repeat(3, 110px);
+    gap: 12px; padding: 15px; border: 3px solid var(--grid-border); border-radius: 15px;
 }
 
 .cell {
-    background-color: var(--cell-bg);
-    border-radius: 10px;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 3.5rem;
-    font-weight: bold;
-    transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
-}
-
-.cell:hover:not(.x):not(.o) {
-    background-color: rgba(74, 144, 226, 0.15);
+    background-color: var(--cell-bg); border-radius: 10px; cursor: pointer;
+    display: flex; justify-content: center; align-items: center;
+    font-size: 3.5rem; font-weight: bold; transition: 0.2s;
 }
 
 .cell.x::after { content: "X"; color: var(--text-blue); }
 .cell.o::after { content: "O"; color: var(--text-yellow); }
 
-.cell.win {
-    background-color: var(--win-bg) !important;
-    transform: scale(1.08);
-    z-index: 10;
-    box-shadow: 0 0 20px var(--win-shadow);
-}
-
-.cell.win.x::after, .cell.win.o::after {
-    color: var(--win-text) !important;
-    text-shadow: none;
-}
+.cell.win { background-color: var(--win-bg) !important; transform: scale(1.05); }
+.cell.win.x::after, .cell.win.o::after { color: var(--win-text) !important; }
 
 .reset-button {
-    background-color: var(--text-blue);
-    color: white;
-    border: none;
-    padding: 12px 30px;
-    margin-top: 35px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 1rem;
-    transition: opacity 0.2s, transform 0.1s;
+    background-color: var(--text-blue); color: white; border: none;
+    padding: 12px 30px; margin-top: 30px; border-radius: 8px; cursor: pointer; font-weight: bold;
 }
 
-.reset-button:hover {
-    opacity: 0.9;
-    transform: translateY(-2px);
-}
-
-.reset-button:active {
-    transform: translateY(0);
-}
-
-footer {
-    text-align: center;
-    padding: 20px;
-    font-size: 0.85rem;
-    opacity: 0.6;
-    color: var(--text-blue);
-}
-
-@media (max-width: 400px) {
-    .morpion-grid {
-        grid-template-columns: repeat(3, 90px);
-        grid-template-rows: repeat(3, 90px);
-    }
-    .score-display {
-        font-size: 1rem;
-    }
-    .score-wrapper {
-        font-size: 1.5rem;
-    }
-}
+footer { text-align: center; padding: 20px; font-size: 0.85rem; opacity: 0.6; }

@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- THÈME ---
     const themeSwitcher = document.getElementById('theme-switcher');
     const applyTheme = (t) => {
         document.body.className = t + '-mode';
@@ -12,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('theme', next);
     });
 
+    // --- VARIABLES ---
     const cells = document.querySelectorAll('.cell');
     const statusMsg = document.getElementById('status-message');
     const scoreHumanEl = document.getElementById('score-human');
@@ -20,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let board = Array(9).fill("");
     let gameActive = true;
+    let isAiThinking = false; // Bloqueur de clic
     let scoreHuman = 0;
     let scoreAi = 0;
 
@@ -55,13 +58,13 @@ document.addEventListener('DOMContentLoaded', () => {
             result.s.forEach(i => cells[i].classList.add('win'));
             if (result.p === "X") {
                 scoreHuman++;
+                scoreHumanEl.textContent = scoreHuman; // Mise à jour immédiate
                 statusMsg.textContent = "Théo a Gagné !";
             } else {
                 scoreAi++;
+                scoreAiEl.textContent = scoreAi; // Mise à jour immédiate
                 statusMsg.textContent = "L'ordinateur a Gagné !";
             }
-            scoreHumanEl.textContent = scoreHuman;
-            scoreAiEl.textContent = scoreAi;
             return true;
         }
         if (!board.includes("")) {
@@ -73,9 +76,13 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const aiMove = () => {
-        if (!gameActive) return;
+        if (!gameActive) {
+            isAiThinking = false;
+            return;
+        }
+
         let move = -1;
-        if (Math.random() < 0.75) {
+        if (Math.random() < 0.80) { // 80% force max
             let bestVal = -Infinity;
             for (let i = 0; i < 9; i++) {
                 if (board[i] === "") {
@@ -89,27 +96,37 @@ document.addEventListener('DOMContentLoaded', () => {
             const empty = board.map((v, i) => v === "" ? i : null).filter(v => v !== null);
             move = empty[Math.floor(Math.random() * empty.length)];
         }
+
         board[move] = "O";
         cells[move].classList.add('o');
-        if (!updateUI()) statusMsg.textContent = "C'est à vous, Théo !";
+        updateUI();
+        if (gameActive) statusMsg.textContent = "C'est à vous, Théo !";
+        isAiThinking = false; // Libère le tour du joueur
     };
 
     const handlePlay = (i) => {
-        if (board[i] !== "" || !gameActive) return;
+        // Condition de blocage : si déjà joué, si jeu fini, ou si l'IA réfléchit
+        if (board[i] !== "" || !gameActive || isAiThinking) return;
+
         board[i] = "X";
         cells[i].classList.add('x');
+        
         if (!updateUI()) {
+            isAiThinking = true; // Bloque le joueur
             statusMsg.textContent = "L'ordinateur réfléchit...";
             setTimeout(aiMove, 600);
         }
     };
 
     const reset = () => {
-        board.fill(""); gameActive = true;
+        board.fill("");
+        gameActive = true;
+        isAiThinking = false;
         cells.forEach(c => c.classList.remove('x', 'o', 'win'));
         statusMsg.textContent = "C'est à vous, Théo !";
     };
 
+    // --- ÉVÉNEMENTS ---
     window.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key.toLowerCase() === 'r') reset();
         const keyMap = {"7":0,"8":1,"9":2,"4":3,"5":4,"6":5,"1":6,"2":7,"3":8};
