@@ -18,17 +18,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const cells = document.querySelectorAll('.cell');
     const statusMsg = document.getElementById('status-message');
     const resetBtn = document.getElementById('reset-button');
+    const scoreHumanEl = document.getElementById('score-human');
+    const scoreAiEl = document.getElementById('score-ai');
     const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
     
     let board = Array(9).fill("");
     let gameActive = true;
+    let scoreHuman = 0;
+    let scoreAi = 0;
     const aiIntelligence = 0.75;
 
     const getWinner = (b) => {
         for (let s of wins) {
-            if (b[s[0]] && b[s[0]] === b[s[1]] && b[s[0]] === b[s[2]]) {
-                return { p: b[s[0]], s: s };
-            }
+            if (b[s[0]] && b[s[0]] === b[s[1]] && b[s[0]] === b[s[2]]) return { p: b[s[0]], s };
         }
         return null;
     };
@@ -61,13 +63,25 @@ document.addEventListener('DOMContentLoaded', () => {
             return best;
         }
     };
-    
+
+    const updateScoreUI = () => {
+        scoreHumanEl.textContent = scoreHuman;
+        scoreAiEl.textContent = scoreAi;
+    };
+
     const endTurn = () => {
         const result = getWinner(board);
         if (result) {
             gameActive = false;
             result.s.forEach(i => cells[i].classList.add('win'));
-            statusMsg.textContent = result.p === "X" ? "Théo a Gagné !" : "L'ordinateur a Gagné !";
+            if (result.p === "X") {
+                scoreHuman++;
+                statusMsg.textContent = "Théo a Gagné !";
+            } else {
+                scoreAi++;
+                statusMsg.textContent = "L'ordinateur a Gagné !";
+            }
+            updateScoreUI();
             return true;
         }
         if (!board.includes("")) {
@@ -121,22 +135,10 @@ document.addEventListener('DOMContentLoaded', () => {
         statusMsg.textContent = "C'est à vous, Théo !";
     };
 
-    const keyMap = {
-        "Numpad7": 0, "7": 0, "Home": 0,
-        "Numpad8": 1, "8": 1, "ArrowUp": 1,
-        "Numpad9": 2, "9": 2, "PageUp": 2,
-        "Numpad4": 3, "4": 3, "ArrowLeft": 3,
-        "Numpad5": 4, "5": 4, "Clear": 4,
-        "Numpad6": 5, "6": 5, "ArrowRight": 5,
-        "Numpad1": 6, "1": 6, "End": 6,
-        "Numpad2": 7, "2": 7, "ArrowDown": 7,
-        "Numpad3": 8, "3": 8, "PageDown": 8
-    };
-
     window.addEventListener('keydown', (e) => {
-        if (e.key.toLowerCase() === 'r') reset();
-        const idx = keyMap[e.code] ?? keyMap[e.key];
-        if (idx !== undefined) handlePlay(idx);
+        if (e.key.toLowerCase() === 'r' || e.key === 'Enter') reset();
+        const keyMap = {"7":0,"8":1,"9":2,"4":3,"5":4,"6":5,"1":6,"2":7,"3":8};
+        if (keyMap[e.key] !== undefined) handlePlay(keyMap[e.key]);
     });
 
     cells.forEach((c, i) => c.addEventListener('click', () => handlePlay(i)));

@@ -7,6 +7,7 @@
     --win-bg: #ffcc00;
     --win-text: #1e213a;
     --win-shadow: rgba(255, 204, 0, 0.6);
+    --score-color: #ffcc00;
 }
 
 body.light-mode {
@@ -18,20 +19,20 @@ body.light-mode {
     --win-bg: #0056b3;
     --win-text: #ffffff;
     --win-shadow: rgba(0, 86, 179, 0.4);
+    --score-color: #d97706; /* Orange pour le mode clair */
 }
 
 body {
     background-color: var(--bg-primary);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', Arial, sans-serif;
     margin: 0;
     color: white;
     display: flex;
     flex-direction: column;
     height: 100vh;
-    transition: background 0.3s ease;
+    transition: background 0.3s;
     overflow: hidden;
 }
-
 
 header { padding: 15px 20px; }
 
@@ -53,7 +54,6 @@ header h2 { color: var(--text-blue); font-size: 1.6rem; margin: 0; }
     height: 42px;
     border-radius: 50%;
     border: none;
-    border-color: 000000;
     background-color: var(--text-yellow);
     cursor: pointer;
     font-size: 1.3rem;
@@ -61,14 +61,7 @@ header h2 { color: var(--text-blue); font-size: 1.6rem; margin: 0; }
     justify-content: center;
     align-items: center;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-
-body.light-mode .theme-circle {
-    background-color: #ff6600;
-}
-
-.theme-circle:hover { transform: scale(1.1); }
 
 .separator {
     height: 1px;
@@ -76,7 +69,6 @@ body.light-mode .theme-circle {
     width: 100%;
     margin-top: 15px;
 }
-
 
 .game-container {
     flex: 1;
@@ -86,13 +78,34 @@ body.light-mode .theme-circle {
     justify-content: center;
 }
 
+/* Nouveau Style pour le Score */
+.score-board {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--score-color);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.score-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.score-value {
+    font-size: 2rem;
+}
+
 .status-message {
     color: var(--text-yellow);
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: bold;
     margin-bottom: 25px;
-    height: 2rem;
-    text-align: center;
+    height: 1.6rem;
 }
 
 .morpion-grid {
@@ -103,7 +116,6 @@ body.light-mode .theme-circle {
     padding: 15px;
     border: 3px solid var(--grid-border);
     border-radius: 15px;
-    background-color: rgba(0, 0, 0, 0.1);
 }
 
 .cell {
@@ -115,11 +127,7 @@ body.light-mode .theme-circle {
     align-items: center;
     font-size: 3.5rem;
     font-weight: bold;
-    transition: all 0.2s ease;
-}
-
-.cell:hover:not(.x):not(.o) {
-    background-color: rgba(74, 144, 226, 0.1);
+    transition: all 0.2s;
 }
 
 .cell.x::after { content: "X"; color: var(--text-blue); }
@@ -128,7 +136,6 @@ body.light-mode .theme-circle {
 .cell.win {
     background-color: var(--win-bg) !important;
     transform: scale(1.08);
-    z-index: 10;
     box-shadow: 0 0 20px var(--win-shadow);
 }
 
@@ -141,21 +148,10 @@ body.light-mode .theme-circle {
     color: white;
     border: none;
     padding: 12px 30px;
-    margin-top: 35px;
+    margin-top: 30px;
     border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
-    font-size: 1rem;
-    transition: opacity 0.2s;
 }
 
-.reset-button:hover { opacity: 0.9; }
-
-footer { text-align: center; padding: 20px; font-size: 0.85rem; opacity: 0.6; color: var(--text-blue); }
-
-@media (max-width: 400px) {
-    .morpion-grid {
-        grid-template-columns: repeat(3, 90px);
-        grid-template-rows: repeat(3, 90px);
-    }
-}
+footer { text-align: center; padding: 20px; font-size: 0.85rem; opacity: 0.6; }
