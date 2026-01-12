@@ -53,6 +53,9 @@ func main() {
 		port = "3000"
 	}
 
-	log.Println("Serveur démarré sur port", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Println("Serveur lancé sur le port " + port)
+	err := http.ListenAndServe(":"+port, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
