@@ -4,7 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.className = t + '-mode';
         themeSwitcher.textContent = t === 'light' ? '🌙' : '☀️';
     };
+    
     applyTheme(localStorage.getItem('theme') || 'dark');
+
     themeSwitcher.addEventListener('click', () => {
         const next = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
         applyTheme(next);
@@ -18,56 +20,71 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let board = Array(9).fill("");
     let gameActive = true;
+    let currentPlayer = "X";
+    let nextStarter = "X";
     let scoreP1 = 0;
     let scoreP2 = 0;
 
-    let currentPlayer = "X";
-    let nextStarter = "X";
-
     const winConditions = [
-        [0,1,2],[3,4,5],[6,7,8], [0,3,6],[1,4,7],[2,5,8], [0,4,8],[2,4,6]
+        [0,1,2], [3,4,5], [6,7,8],
+        [0,3,6], [1,4,7], [2,5,8],
+        [0,4,8], [2,4,6]           
     ];
 
     const launchConfetti = () => {
-        confetti({
-            particleCount: 150,
-            spread: 70,
-            origin: { y: 0.6 },
-            colors: ['#4a90e2', '#ffcc00', '#ffffff']
-        });
+        if (typeof confetti === 'function') {
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#4a90e2', '#ffcc00', '#ffffff']
+            });
+        }
     };
 
     const checkWinner = () => {
+        let roundWon = false;
+        let winningSequence = [];
+
         for (let condition of winConditions) {
             const [a, b, c] = condition;
             if (board[a] !== "" && board[a] === board[b] && board[a] === board[c]) {
-                gameActive = false;
-                condition.forEach(i => cells[i].classList.add('win'));
-                
-                if (board[a] === "X") {
-                    scoreP1++;
-                    scoreP1El.textContent = scoreP1;
-                    statusMsg.textContent = "Victoire de Théo !";
-                    nextStarter = "X";
-                } else {
-                    scoreP2++;
-                    scoreP2El.textContent = scoreP2;
-                    statusMsg.textContent = "Victoire du Joueur 2 !";
-                    nextStarter = "O";
-                }
-                launchConfetti();
-                return true;
+                roundWon = true;
+                winningSequence = [a, b, c];
+                break;
             }
         }
-        if (!board.includes("")) {
+
+        if (roundWon) {
             gameActive = false;
-            statusMsg.textContent = "Égalité !";
+            winningSequence.forEach(idx => cells[idx].classList.add('win'));
+            
+            if (currentPlayer === "X") {
+                scoreP1++;
+                scoreP1El.innerText = scoreP1;
+                statusMsg.innerText = "Victoire du Joueur 1!";
+                nextStarter = "X";
+            } else {
+                scoreP2++;
+                scoreP2El.innerText = scoreP2;
+                statusMsg.innerText = "Victoire du Joueur 2 !";
+                nextStarter = "O";
+            }
+            
+            launchConfetti();
             return true;
         }
+
+        if (!board.includes("")) {
+            gameActive = false;
+            statusMsg.innerText = "Match nul !";
+            return true;
+        }
+
         return false;
     };
 
-    const handleCellClick = (index) => {
+    const playMove = (index) => {
         if (board[index] !== "" || !gameActive) return;
 
         board[index] = currentPlayer;
@@ -75,30 +92,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!checkWinner()) {
             currentPlayer = (currentPlayer === "X") ? "O" : "X";
-            updateStatusText();
+            const name = (currentPlayer === "X") ? "Joueur 1" : "Joueur 2";
+            statusMsg.innerText = `Au tour de : ${name} (${currentPlayer})`;
         }
     };
 
-    const updateStatusText = () => {
-        const name = (currentPlayer === "X") ? "Théo" : "Joueur 2";
-        statusMsg.textContent = `Au tour de : ${name} (${currentPlayer})`;
-    };
-
     const resetGame = () => {
-        board.fill("");
+        board = Array(9).fill("");
         gameActive = true;
+        
         currentPlayer = nextStarter; 
-        cells.forEach(cell => cell.classList.remove('x', 'o', 'win'));
-        updateStatusText();
-        statusMsg.textContent += " (Gagnant précédent)";
+        
+        cells.forEach(cell => {
+            cell.classList.remove('x', 'o', 'win');
+        });
+
+        const name = (currentPlayer === "X") ? "Joueur 1" : "Joueur 2";
+        statusMsg.innerText = `${name} commence la revanche !`;
     };
 
-    cells.forEach((cell, i) => cell.addEventListener('click', () => handleCellClick(i)));
+    cells.forEach((cell, i) => {
+        cell.addEventListener('click', () => playMove(i));
+    });
+
     document.getElementById('reset-button').addEventListener('click', resetGame);
-    
+
     window.addEventListener('keydown', (e) => {
-        if (e.key.toLowerCase() === 'r') resetGame();
-        const keyMap = {"7":0,"8":1,"9":2,"4":3,"5":4,"6":5,"1":6,"2":7,"3":8};
-        if (keyMap[e.key] !== undefined) handleCellClick(keyMap[e.key]);
+        if (e.key.toLowerCase() === 'r') {
+            resetGame();
+            return;
+        }
+
+        const keyMap = {
+            "7": 0, "8": 1, "9": 2,
+            "4": 3, "5": 4, "6": 5,
+            "1": 6, "2": 7, "3": 8
+        };
+
+        if (keyMap[e.key] !== undefined) {
+            playMove(keyMap[e.key]);
+        }
     });
 });

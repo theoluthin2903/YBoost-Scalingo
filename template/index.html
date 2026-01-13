@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Morpion - Théo vs Joueur 2</title>
+    <title>Morpion - 1v1 Local</title>
     <link rel="stylesheet" href="/static/style.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="/static/script.js" defer></script>
@@ -11,7 +11,7 @@
 <body class="dark-mode">
     <header>
         <div class="header-top">
-            <h2>Morpion</h2>
+            <h2>Morpion 1v1</h2>
             <button id="theme-switcher" class="theme-circle">☀️</button>
         </div>
         <div class="separator"></div>
@@ -23,26 +23,26 @@
                 <div class="score-display">
                     <span class="player-name">Théo (X)</span>
                     <div class="score-wrapper">
-                        <span id="score-human">0</span>
+                        <span id="score-p1">0</span>
                         <span class="score-divider">-</span>
-                        <span id="score-ai">0</span>
+                        <span id="score-p2">0</span>
                     </div>
                     <span class="player-name">Joueur 2 (O)</span>
                 </div>
             </div>
 
-            <div id="status-message" class="status-message">Théo, à vous de commencer !</div>
+            <div id="status-message" class="status-message">Théo, à vous !</div>
 
-            <div class="morpion-grid">
-                <div class="cell" data-index="0" data-key="7"></div>
-                <div class="cell" data-index="1" data-key="8"></div>
-                <div class="cell" data-index="2" data-key="9"></div>
-                <div class="cell" data-index="3" data-key="4"></div>
-                <div class="cell" data-index="4" data-key="5"></div>
-                <div class="cell" data-index="5" data-key="6"></div>
-                <div class="cell" data-index="6" data-key="1"></div>
-                <div class="cell" data-index="7" data-key="2"></div>
-                <div class="cell" data-index="8" data-key="3"></div>
+            <div class="morpion-grid" id="morpion-grid">
+                <div class="cell" data-index="0"></div>
+                <div class="cell" data-index="1"></div>
+                <div class="cell" data-index="2"></div>
+                <div class="cell" data-index="3"></div>
+                <div class="cell" data-index="4"></div>
+                <div class="cell" data-index="5"></div>
+                <div class="cell" data-index="6"></div>
+                <div class="cell" data-index="7"></div>
+                <div class="cell" data-index="8"></div>
             </div>
 
             <button id="reset-button" class="reset-button">Rejouer</button>
