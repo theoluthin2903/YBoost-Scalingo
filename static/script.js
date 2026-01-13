@@ -1,71 +1,63 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- THÈME ---
     const themeSwitcher = document.getElementById('theme-switcher');
     const applyTheme = (t) => {
         document.body.className = t + '-mode';
         themeSwitcher.textContent = t === 'light' ? '🌙' : '☀️';
     };
     applyTheme(localStorage.getItem('theme') || 'dark');
-
     themeSwitcher.addEventListener('click', () => {
         const next = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
         applyTheme(next);
         localStorage.setItem('theme', next);
     });
 
-    // --- VARIABLES ---
     const cells = document.querySelectorAll('.cell');
     const statusMsg = document.getElementById('status-message');
-    const scoreHumanEl = document.getElementById('score-human');
-    const scoreAiEl = document.getElementById('score-ai');
-    const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    const scoreP1El = document.getElementById('score-p1');
+    const scoreP2El = document.getElementById('score-p2');
     
     let board = Array(9).fill("");
     let gameActive = true;
-    let isAiThinking = false; // Bloqueur de clic
-    let scoreHuman = 0;
-    let scoreAi = 0;
+    let scoreP1 = 0;
+    let scoreP2 = 0;
 
-    const checkWinner = (b) => {
-        for (let s of wins) {
-            if (b[s[0]] && b[s[0]] === b[s[1]] && b[s[0]] === b[s[2]]) return { p: b[s[0]], s };
-        }
-        return null;
+    let currentPlayer = "X";
+    let nextStarter = "X";
+
+    const winConditions = [
+        [0,1,2],[3,4,5],[6,7,8], [0,3,6],[1,4,7],[2,5,8], [0,4,8],[2,4,6]
+    ];
+
+    const launchConfetti = () => {
+        confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#4a90e2', '#ffcc00', '#ffffff']
+        });
     };
 
-    const minimax = (currBoard, depth, isMax) => {
-        const res = checkWinner(currBoard);
-        if (res && res.p === "O") return 10 - depth;
-        if (res && res.p === "X") return depth - 10;
-        if (!currBoard.includes("")) return 0;
-
-        let best = isMax ? -Infinity : Infinity;
-        for (let i = 0; i < 9; i++) {
-            if (currBoard[i] === "") {
-                currBoard[i] = isMax ? "O" : "X";
-                let val = minimax(currBoard, depth + 1, !isMax);
-                currBoard[i] = "";
-                best = isMax ? Math.max(best, val) : Math.min(best, val);
+    const checkWinner = () => {
+        for (let condition of winConditions) {
+            const [a, b, c] = condition;
+            if (board[a] !== "" && board[a] === board[b] && board[a] === board[c]) {
+                gameActive = false;
+                condition.forEach(i => cells[i].classList.add('win'));
+                
+                if (board[a] === "X") {
+                    scoreP1++;
+                    scoreP1El.textContent = scoreP1;
+                    statusMsg.textContent = "Victoire de Théo !";
+                    nextStarter = "X";
+                } else {
+                    scoreP2++;
+                    scoreP2El.textContent = scoreP2;
+                    statusMsg.textContent = "Victoire du Joueur 2 !";
+                    nextStarter = "O";
+                }
+                launchConfetti();
+                return true;
             }
-        }
-        return best;
-    };
-
-    const updateUI = () => {
-        const result = checkWinner(board);
-        if (result) {
-            gameActive = false;
-            result.s.forEach(i => cells[i].classList.add('win'));
-            if (result.p === "X") {
-                scoreHuman++;
-                scoreHumanEl.textContent = scoreHuman; // Mise à jour immédiate
-                statusMsg.textContent = "Théo a Gagné !";
-            } else {
-                scoreAi++;
-                scoreAiEl.textContent = scoreAi; // Mise à jour immédiate
-                statusMsg.textContent = "L'ordinateur a Gagné !";
-            }
-            return true;
         }
         if (!board.includes("")) {
             gameActive = false;
@@ -75,64 +67,38 @@ document.addEventListener('DOMContentLoaded', () => {
         return false;
     };
 
-    const aiMove = () => {
-        if (!gameActive) {
-            isAiThinking = false;
-            return;
-        }
+    const handleCellClick = (index) => {
+        if (board[index] !== "" || !gameActive) return;
 
-        let move = -1;
-        if (Math.random() < 0.80) { // 80% force max
-            let bestVal = -Infinity;
-            for (let i = 0; i < 9; i++) {
-                if (board[i] === "") {
-                    board[i] = "O";
-                    let val = minimax(board, 0, false);
-                    board[i] = "";
-                    if (val > bestVal) { bestVal = val; move = i; }
-                }
-            }
-        } else {
-            const empty = board.map((v, i) => v === "" ? i : null).filter(v => v !== null);
-            move = empty[Math.floor(Math.random() * empty.length)];
-        }
+        board[index] = currentPlayer;
+        cells[index].classList.add(currentPlayer.toLowerCase());
 
-        board[move] = "O";
-        cells[move].classList.add('o');
-        updateUI();
-        if (gameActive) statusMsg.textContent = "C'est à vous, Théo !";
-        isAiThinking = false; // Libère le tour du joueur
-    };
-
-    const handlePlay = (i) => {
-        // Condition de blocage : si déjà joué, si jeu fini, ou si l'IA réfléchit
-        if (board[i] !== "" || !gameActive || isAiThinking) return;
-
-        board[i] = "X";
-        cells[i].classList.add('x');
-        
-        if (!updateUI()) {
-            isAiThinking = true; // Bloque le joueur
-            statusMsg.textContent = "L'ordinateur réfléchit...";
-            setTimeout(aiMove, 600);
+        if (!checkWinner()) {
+            currentPlayer = (currentPlayer === "X") ? "O" : "X";
+            updateStatusText();
         }
     };
 
-    const reset = () => {
+    const updateStatusText = () => {
+        const name = (currentPlayer === "X") ? "Théo" : "Joueur 2";
+        statusMsg.textContent = `Au tour de : ${name} (${currentPlayer})`;
+    };
+
+    const resetGame = () => {
         board.fill("");
         gameActive = true;
-        isAiThinking = false;
-        cells.forEach(c => c.classList.remove('x', 'o', 'win'));
-        statusMsg.textContent = "C'est à vous, Théo !";
+        currentPlayer = nextStarter; 
+        cells.forEach(cell => cell.classList.remove('x', 'o', 'win'));
+        updateStatusText();
+        statusMsg.textContent += " (Gagnant précédent)";
     };
 
-    // --- ÉVÉNEMENTS ---
+    cells.forEach((cell, i) => cell.addEventListener('click', () => handleCellClick(i)));
+    document.getElementById('reset-button').addEventListener('click', resetGame);
+    
     window.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key.toLowerCase() === 'r') reset();
+        if (e.key.toLowerCase() === 'r') resetGame();
         const keyMap = {"7":0,"8":1,"9":2,"4":3,"5":4,"6":5,"1":6,"2":7,"3":8};
-        if (keyMap[e.key] !== undefined) handlePlay(keyMap[e.key]);
+        if (keyMap[e.key] !== undefined) handleCellClick(keyMap[e.key]);
     });
-
-    cells.forEach((c, i) => c.addEventListener('click', () => handlePlay(i)));
-    document.getElementById('reset-button').addEventListener('click', reset);
 });

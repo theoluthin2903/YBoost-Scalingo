@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Morpion - Théo vs Robot</title>
+    <title>Morpion - Théo vs Joueur 2</title>
     <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="/static/script.js" defer></script>
 </head>
 <body class="dark-mode">
@@ -20,17 +21,17 @@
         <section class="game-container"> 
             <div class="score-board">
                 <div class="score-display">
-                    <span class="player-name">Théo</span>
+                    <span class="player-name">Théo (X)</span>
                     <div class="score-wrapper">
                         <span id="score-human">0</span>
                         <span class="score-divider">-</span>
                         <span id="score-ai">0</span>
                     </div>
-                    <span class="player-name">Robot</span>
+                    <span class="player-name">Joueur 2 (O)</span>
                 </div>
             </div>
 
-            <div id="status-message" class="status-message">C'est à vous, Théo !</div>
+            <div id="status-message" class="status-message">Théo, à vous de commencer !</div>
 
             <div class="morpion-grid">
                 <div class="cell" data-index="0" data-key="7"></div>
@@ -44,12 +45,12 @@
                 <div class="cell" data-index="8" data-key="3"></div>
             </div>
 
-            <button id="reset-button" class="reset-button">Rejouer (Entrée / R)</button>
+            <button id="reset-button" class="reset-button">Rejouer</button>
         </section>
     </main>
 
     <footer>
-        © 2025 Théo Luthin — Tous droits réservés
+        © 2026 Théo Luthin — Tous droits réservés
     </footer>
 </body>
 </html>
