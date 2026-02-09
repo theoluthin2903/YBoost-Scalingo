@@ -1,1 +1,1 @@
-web: ./yboost-scalingo
+web: ./yboost-scalingapp-str
