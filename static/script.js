@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         letSpan.innerText = getLetter(n);
         numSpan.innerText = n;
-        statusMsg.innerText = `${getLetter(n)}-${n} tiré !`;
+        statusMsg.innerText = `${getLetter(n)}-${n} !`;
 
         Array.from(calledListEl.children).forEach(b => b.classList.remove('latest'));
         const miniBall = document.createElement('div');
@@ -122,11 +122,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (board[index] === currentDrawnNumber && !marked[index]) {
             marked[index] = true;
             grid.children[index].classList.add('marked');
-            
-            const checkOubli = (b, m) => b.some((v, i) => v === currentDrawnNumber && !m[i]);
-            if (!checkOubli(board1, marked1) && !checkOubli(board2, marked2)) {
-                statusMsg.innerText = "Validé ! Vous pouvez tirer la suite.";
-            }
             checkWinner(player);
         }
     };
