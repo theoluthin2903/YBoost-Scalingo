@@ -1,46 +1,46 @@
 package main
 
 import (
-	"embed"
-	"io/fs"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
 )
 
-var embeddedFiles embed.FS
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
+
+	tmpl, err := template.ParseFiles("template/index.html")
+	if err != nil {
+		log.Printf("ERREUR : Impossible de trouver index.html : %v", err)
+		http.Error(w, "Erreur interne (Template manquant)", http.StatusInternalServerError)
+		return
+	}
+
+	err = tmpl.Execute(w, nil)
+	if err != nil {
+		log.Printf("ERREUR : Echec de l'exécution du template : %v", err)
+	}
+}
 
 func main() {
-	staticWin, _ := fs.Sub(embeddedFiles, "static")
-	staticHandler := http.StripPrefix("/static/", http.FileServer(http.FS(staticWin)))
-	http.Handle("/static/", staticHandler)
+	fs := http.FileServer(http.Dir("static"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
-	templateWin, _ := fs.Sub(embeddedFiles, "template")
-
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/" {
-			data, _ := fs.ReadFile(templateWin, "index.html")
-			w.Write(data)
-			return
-		}
-
-		data, err := fs.ReadFile(templateWin, r.URL.Path[1:])
-		if err != nil {
-			errorData, _ := fs.ReadFile(templateWin, "error.html")
-			w.WriteHeader(http.StatusNotFound)
-			w.Write(errorData)
-			return
-		}
-		w.Write(data)
-	})
+	http.HandleFunc("/", homeHandler)
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "1234"
+		port = "3000"
 	}
 
-	log.Printf("Serveur Bingo lancé sur le port %s", port)
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
-		log.Fatal(err)
+	log.Printf("Serveur démarré sur le port %s", port)
+
+	err := http.ListenAndServe(":"+port, nil)
+	if err != nil {
+		log.Fatal("ERREUR FATALE (Le serveur n'a pas pu démarrer) : ", err)
 	}
 }
