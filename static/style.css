@@ -7,6 +7,7 @@
     --win-bg: #ffcc00;
     --win-text: #1e213a;
     --score-color: #ffcc00;
+    --free-bg: #3d426b;
 }
 
 body.light-mode {
@@ -18,151 +19,73 @@ body.light-mode {
     --win-bg: #0056b3;
     --win-text: #ffffff;
     --score-color: #d97706;
+    --free-bg: #e2e8f0;
 }
 
 body {
     background-color: var(--bg-primary);
-    font-family: 'Segoe UI', Tahoma, sans-serif;
-    margin: 0;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    transition: background 0.3s ease;
-    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0; color: white; display: flex; flex-direction: column;
+    min-height: 100vh; transition: background 0.3s ease;
 }
 
 header { padding: 15px 20px; }
 .header-top { display: flex; justify-content: center; align-items: center; position: relative; max-width: 800px; margin: 0 auto; }
 header h2 { color: var(--text-blue); font-size: 1.6rem; margin: 0; }
-
 .theme-circle {
     position: absolute; right: 0; width: 40px; height: 40px; border-radius: 50%;
     border: none; background-color: var(--text-yellow); cursor: pointer;
     font-size: 1.2rem; display: flex; justify-content: center; align-items: center;
 }
-
 .separator { height: 1px; background: rgba(255, 255, 255, 0.1); width: 100%; margin-top: 15px; }
 
-.score-board { margin-bottom: 25px; }
+.game-container { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 10px 20px; }
 
 .score-display {
-    display: flex; align-items: center; gap: 20px;
-    font-size: 1.3rem; font-weight: 800;
-    color: var(--score-color) !important;
-    text-transform: uppercase;
+    display: flex; align-items: center;
+    gap: 40px; /* Augmenté de 20px à 40px */
+    font-weight: 800; color: var(--score-color); font-size: 1.2rem;
 }
 
-.score-wrapper {
-    display: flex; align-items: center; gap: 10px; padding: 5px 25px;
-    border: 3px solid var(--score-color);
-    border-radius: 50px; background: rgba(0, 0, 0, 0.1);
-    font-size: 2rem;
-    color: var(--score-color) !important;
-}
+.score-wrapper { display: flex; align-items: center; gap: 10px; padding: 5px 20px; border: 3px solid var(--score-color); border-radius: 50px; font-size: 1.5rem; }
 
-.score-display, .score-wrapper, #score-p1, #score-p2, .score-divider {
-    color: var(--score-color) !important;
-}
-
-.player-name {
-    min-width: 100px;
-}
-
-.game-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-
-.status-message { color: var(--text-yellow); font-size: 1.4rem; font-weight: bold; margin-bottom: 20px; height: 1.6rem; }
-
-.morpion-grid {
-    display: grid; grid-template-columns: repeat(3, 110px); grid-template-rows: repeat(3, 110px);
-    gap: 12px; padding: 15px; border: 3px solid var(--grid-border); border-radius: 15px;
-}
-
-.cell {
-    background-color: var(--cell-bg); border-radius: 10px; cursor: pointer;
-    display: flex; justify-content: center; align-items: center;
-    font-size: 3.5rem; font-weight: bold; transition: 0.2s;
-}
-
-.cell.x::after { content: "X"; color: var(--text-blue); }
-
-.cell.o::after { content: "O"; color: var(--text-yellow); }
-
-.cell.win { background-color: var(--win-bg) !important; transform: scale(1.05); }
-
-.cell.win.x::after, .cell.win.o::after { color: var(--win-text) !important; }
-
-.reset-button {
-    background-color: var(--text-blue); color: white; border: none;
-    padding: 12px 30px; margin-top: 30px; border-radius: 8px; cursor: pointer; font-weight: bold;
-}
-
-footer { text-align: center; padding: 20px; font-size: 0.85rem; opacity: 0.6; }
-
-.bingo-layout {
-    display: flex;
-    gap: 40px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.player-area {
-    text-align: center;
-}
-
-.player-area p {
-    font-weight: bold;
-    color: var(--text-blue);
-    margin-bottom: 10px;
-}
-
-.draw-zone {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
+.draw-zone { display: flex; flex-direction: column; align-items: center; gap: 10px; margin: 15px 0; }
 .current-number {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: var(--text-yellow);
-    color: var(--bg-primary);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 2.5rem;
-    font-weight: 900;
-    border: 4px solid white;
+    width: 80px; height: 80px; border-radius: 50%; background: var(--text-yellow);
+    color: var(--bg-primary); display: flex; flex-direction: column; justify-content: center; align-items: center;
+    border: 4px solid white; line-height: 1;
 }
+#letter-span { font-size: 1rem; font-weight: bold; opacity: 0.8; }
+#number-span { font-size: 2.2rem; font-weight: 900; }
 
-.draw-button {
-    background-color: var(--text-yellow);
-    color: var(--bg-primary);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: transform 0.2s;
+.draw-button { background: var(--text-blue); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+.status-message { color: var(--text-yellow); font-weight: bold; margin: 10px 0; height: 1.5rem; text-align: center;}
+
+.bingo-layout { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+.player-area p { color: var(--text-blue); font-weight: bold; margin: 5px 0; text-align: center; }
+
+.grid-header {
+    display: grid; grid-template-columns: repeat(5, 55px); gap: 5px;
+    margin-bottom: 5px; padding: 0 5px;
 }
+.grid-header span { text-align: center; font-weight: bold; color: var(--grid-border); }
 
-.draw-button:active { transform: scale(0.95); }
-
-/* Ajustement des cellules pour le Bingo */
-.morpion-grid {
-    grid-template-columns: repeat(3, 80px);
-    grid-template-rows: repeat(3, 80px);
+.bingo-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 55px);
+    grid-template-rows: repeat(5, 55px); 
+    gap: 5px; padding: 5px; border: 2px solid var(--grid-border); border-radius: 12px;
 }
 
 .cell {
-    font-size: 1.5rem;
+    background-color: var(--cell-bg); border-radius: 6px; cursor: pointer;
+    display: flex; justify-content: center; align-items: center;
+    font-size: 1.1rem; font-weight: bold; transition: 0.2s; user-select: none;
 }
 
-.cell.marked {
-    background-color: var(--text-blue);
-    color: white;
-}
+.cell.free { background-color: var(--free-bg); color: var(--text-blue); font-size: 0.8rem; }
+.cell.marked { background-color: var(--text-blue); color: white; }
+.cell.win { background-color: var(--win-bg) !important; color: var(--win-text) !important; }
+
+.reset-button { background: #666; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 20px; }
+footer { text-align: center; padding: 15px; font-size: 0.8rem; opacity: 0.5; }
