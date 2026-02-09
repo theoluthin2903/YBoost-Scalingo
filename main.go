@@ -36,7 +36,7 @@ func main() {
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "1234"
 	}
 
 	log.Printf("Serveur Bingo lancé sur le port %s", port)
