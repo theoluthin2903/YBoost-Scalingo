@@ -1,1 +1,1 @@
-web: ./YBoost-Scalingo
+web: yboost-scalingo
