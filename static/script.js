@@ -15,11 +15,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusMsg = document.getElementById('status-message');
     const scoreP1El = document.getElementById('score-p1');
     const scoreP2El = document.getElementById('score-p2');
+    const calledNumbersListEl = document.getElementById('called-numbers-list');
 
     let scoreP1 = 0, scoreP2 = 0;
     let currentDrawnNumber = null;
     let drawnNumbersHistory = [];
     let gameActive = true;
+
     let board1 = [], board2 = [];
     let marked1 = Array(25).fill(false);
     let marked2 = Array(25).fill(false);
@@ -57,10 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const initGrids = () => {
-        board1 = generateBingoCard();
-        board2 = generateBingoCard();
-        marked1[12] = true;
-        marked2[12] = true;
+        board1 = generateBingoCard(); board2 = generateBingoCard();
+        marked1[12] = true; marked2[12] = true;
         renderGrids();
     };
 
@@ -73,19 +73,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const createCell = (val, index, player) => {
         const cell = document.createElement('div');
         cell.className = 'cell';
-        if (val === "FREE") {
-            cell.classList.add('free', 'marked');
-            cell.innerText = "⭐";
-        } else {
-            cell.innerText = val;
-        }
+        if (val === "FREE") { cell.classList.add('free', 'marked'); cell.innerText = "⭐"; }
+        else { cell.innerText = val; }
         cell.addEventListener('click', () => handleMark(index, player));
         return cell;
     };
 
     const getLetterForNumber = (n) => {
         if(n<=15) return 'B'; if(n<=30) return 'I'; if(n<=45) return 'N'; if(n<=60) return 'G'; return 'O';
-    }
+    };
+
+    const createMiniBall = (n, isLatest = false) => {
+        const letter = getLetterForNumber(n);
+        const ball = document.createElement('div');
+        ball.className = `mini-ball ${isLatest ? 'latest' : ''}`;
+        ball.innerHTML = `<span class="ball-letter">${letter}</span><span>${n}</span>`;
+        return ball;
+    };
 
     const drawNumber = () => {
         if (!gameActive) return;
@@ -97,9 +101,15 @@ document.addEventListener('DOMContentLoaded', () => {
         currentDrawnNumber = n;
         drawnNumbersHistory.push(n);
         
-        letSpan.innerText = getLetterForNumber(n);
+        const letter = getLetterForNumber(n);
+        letSpan.innerText = letter;
         numSpan.innerText = n;
-        statusMsg.innerText = `${getLetterForNumber(n)}-${n} tiré ! Vérifiez vos colonnes.`;
+        statusMsg.innerText = `${letter}-${n} tiré ! Vérifiez vos colonnes.`;
+
+        const existingBalls = calledNumbersListEl.getElementsByClassName('mini-ball');
+        Array.from(existingBalls).forEach(b => b.classList.remove('latest'));
+        const newBall = createMiniBall(n, true);
+        calledNumbersListEl.prepend(newBall);
     };
 
     const handleMark = (index, player) => {
@@ -107,6 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const board = player === 1 ? board1 : board2;
         const marked = player === 1 ? marked1 : marked2;
         const grid = player === 1 ? grid1El : grid2El;
+
         if (board[index] === currentDrawnNumber && !marked[index] && board[index] !== "FREE") {
             marked[index] = true;
             grid.children[index].classList.add('marked');
@@ -117,19 +128,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkWinner = (playerLastMoved) => {
         const marked = playerLastMoved === 1 ? marked1 : marked2;
         const grid = playerLastMoved === 1 ? grid1El : grid2El;
-        
         const winningLine = winConditions.find(cond => cond.every(idx => marked[idx]));
 
         if (winningLine) {
             gameActive = false;
             winningLine.forEach(idx => grid.children[idx].classList.add('win'));
-            if (playerLastMoved === 1) {
-                scoreP1++; scoreP1El.innerText = scoreP1;
-                statusMsg.innerText = "BINGO ! Joueur 1 remporte la manche !";
-            } else {
-                scoreP2++; scoreP2El.innerText = scoreP2;
-                statusMsg.innerText = "BINGO ! Joueur 2 remporte la manche !";
-            }
+            if (playerLastMoved === 1) { scoreP1++; scoreP1El.innerText = scoreP1; statusMsg.innerText = "BINGO ! Joueur 1 gagne !"; }
+            else { scoreP2++; scoreP2El.innerText = scoreP2; statusMsg.innerText = "BINGO ! Joueur 2 gagne !"; }
             if (typeof confetti === 'function') confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
         }
     };
@@ -139,6 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
         marked1 = Array(25).fill(false); marked2 = Array(25).fill(false);
         numSpan.innerText = "?"; letSpan.innerText = "";
         statusMsg.innerText = "Nouvelle partie 5x5 !";
+        calledNumbersListEl.innerHTML = '';
         initGrids();
     };
 
