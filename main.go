@@ -39,7 +39,7 @@ func main() {
 
 	log.Printf("Serveur démarré sur le port %s", port)
 
-	err := http.ListenAndServe(":"+port, nil)
+	err := http.ListenAndServe(":" + port, nil)
 	if err != nil {
 		log.Fatal("ERREUR FATALE (Le serveur n'a pas pu démarrer) : ", err)
 	}
