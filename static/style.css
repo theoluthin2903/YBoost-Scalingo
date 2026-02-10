@@ -170,6 +170,7 @@ body.light-mode .player-area p {
     grid-template-columns: repeat(5, 55px);
     gap: 5px;
     margin-bottom: 8px;
+    justify-content: center;
 }
 
 .grid-header span {
@@ -184,7 +185,14 @@ body.light-mode .player-area p {
 }
 
 @media (max-width: 768px) {
-    .grid-header {
+    .bingo-grid, .grid-header {
         grid-template-columns: repeat(5, 45px);
+        gap: 5px;
+    }
+}
+
+@media (max-width: 500px) {
+    .bingo-grid, .grid-header {
+        grid-template-columns: repeat(5, 40px);
     }
 }
