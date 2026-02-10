@@ -19,7 +19,7 @@ body.light-mode {
     --grid-border: #0056b3;
     --cell-bg: #ffffff;
     --win-bg: #d97706;
-    --win-text: #ffffff;
+    --win-text: #000000;
     --score-color: #d97706;
     --free-bg: #e2e8f0;
     --text-main: #1e213a;
@@ -116,6 +116,15 @@ header h2 { color: var(--text-blue); font-size: 1.6rem; margin: 0; }
     box-shadow: 0 0 15px var(--win-bg);
     transform: scale(1.05);
     z-index: 10;
+}
+
+.bingo-grid .cell.marked.win { 
+    background-color: var(--win-bg) !important; 
+    color: var(--win-text) !important; 
+    box-shadow: 0 0 20px var(--win-bg);
+    transform: scale(1.08);
+    z-index: 10;
+    border: 2px solid white;
 }
 
 .right-panel.sidebar {
