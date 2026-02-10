@@ -92,17 +92,23 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const handleMark = (index, player) => {
-        if (!gameActive || currentDrawnNumber === null) return;
-        const b = player === 1 ? board1 : board2;
-        const m = player === 1 ? marked1 : marked2;
-        const g = player === 1 ? grid1El : grid2El;
+    if (!gameActive || currentDrawnNumber === null) return;
+    
+    const b1 = board1[index];
+    const b2 = board2[index];
 
-        if (b[index] === currentDrawnNumber && !m[index]) {
-            m[index] = true;
-            g.children[index].classList.add('marked');
-            checkAllWinners();
-        }
-    };
+    if (player === 1 && b1 === currentDrawnNumber && !marked1[index]) {
+        marked1[index] = true;
+        grid1El.children[index].classList.add('marked');
+    }
+
+    if (player === 2 && b2 === currentDrawnNumber && !marked2[index]) {
+        marked2[index] = true;
+        grid2El.children[index].classList.add('marked');
+    }
+
+    checkAllWinners();
+};
 
     const checkAllWinners = () => {
         const winsP1 = winConditions.filter(cond => cond.every(idx => marked1[idx]));
