@@ -164,3 +164,27 @@ body.light-mode .player-area p {
     background: rgba(0, 0, 0, 0.05);
     color: var(--text-blue);
 }
+
+.grid-header {
+    display: grid;
+    grid-template-columns: repeat(5, 55px);
+    gap: 5px;
+    margin-bottom: 8px;
+}
+
+.grid-header span {
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    font-weight: 900;
+    font-size: 1.2rem;
+    color: var(--text-blue);
+    text-align: center;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .grid-header {
+        grid-template-columns: repeat(5, 45px);
+    }
+}
