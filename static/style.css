@@ -18,7 +18,7 @@ body.light-mode {
     --text-yellow: #d97706;
     --grid-border: #0056b3;
     --cell-bg: #ffffff;
-    --win-bg: #0056b3;
+    --win-bg: #ff8c00;
     --win-text: #ffffff;
     --score-color: #d97706;
     --free-bg: #e2e8f0;
@@ -109,7 +109,14 @@ header h2 { color: var(--text-blue); font-size: 1.6rem; margin: 0; }
 .cell:hover { transform: scale(1.05); }
 .cell.free { background-color: var(--free-bg); color: var(--text-blue); font-size: 0.9rem; }
 .cell.marked { background-color: var(--text-blue) !important; color: white !important; transform: scale(0.95); }
-.cell.win { background-color: var(--win-bg) !important; color: var(--win-text) !important; box-shadow: 0 0 15px var(--win-bg); }
+
+.cell.win { 
+    background-color: var(--win-bg) !important; 
+    color: var(--win-text) !important; 
+    box-shadow: 0 0 15px var(--win-bg);
+    transform: scale(1.05);
+    z-index: 10;
+}
 
 .right-panel.sidebar {
     flex: 1; min-width: 250px; max-width: 350px; background: var(--sidebar-bg);
