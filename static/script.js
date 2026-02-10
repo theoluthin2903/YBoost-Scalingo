@@ -35,30 +35,28 @@ document.addEventListener('DOMContentLoaded', () => {
         [0,6,12,18,24], [4,8,12,16,20]
     ];
 
-    const getUniqueRandoms = (count, min, max) => {
-        let nums = new Set();
-        while(nums.size < count) nums.add(Math.floor(Math.random() * (max - min + 1)) + min);
-        return Array.from(nums);
+    const generateTraditionalCard = () => {
+        const getU = (c, min, max) => {
+            let s = new Set();
+            while(s.size < c) s.add(Math.floor(Math.random()*(max-min+1))+min);
+            return Array.from(s);
+        };
+        let c = Array(25).fill(0);
+        let b=getU(5,1,15), i=getU(5,16,30), n=getU(4,31,45), g=getU(5,46,60), o=getU(5,61,75);
+        for(let r=0; r<5; r++){
+            c[r*5+0]=b[r]; c[r*5+1]=i[r]; c[r*5+3]=g[r]; c[r*5+4]=o[r];
+            if(r<2) c[r*5+2]=n[r]; else if(r===2) c[r*5+2]="FREE"; else c[r*5+2]=n[r-1];
+        }
+        return c;
     };
 
-    const generateTraditionalCard = () => {
-        let card = Array(25).fill(0);
-        let b = getUniqueRandoms(5, 1, 15);
-        let i = getUniqueRandoms(5, 16, 30);
-        let n = getUniqueRandoms(4, 31, 45);
-        let g = getUniqueRandoms(5, 46, 60);
-        let o = getUniqueRandoms(5, 61, 75);
-
-        for(let r = 0; r < 5; r++) {
-            card[r*5 + 0] = b[r];
-            card[r*5 + 1] = i[r];
-            if (r < 2) card[r*5 + 2] = n[r];
-            else if (r === 2) card[r*5 + 2] = "FREE";
-            else card[r*5 + 2] = n[r-1];
-            card[r*5 + 3] = g[r];
-            card[r*5 + 4] = o[r];
-        }
-        return card;
+    const createCell = (v, i, p) => {
+        const div = document.createElement('div');
+        div.className = 'cell';
+        if(v === "FREE") { div.classList.add('free', 'marked'); div.innerText = "⭐"; }
+        else div.innerText = v;
+        div.addEventListener('click', () => handleMark(i, p));
+        return div;
     };
 
     const renderGrids = () => {
@@ -67,76 +65,78 @@ document.addEventListener('DOMContentLoaded', () => {
         board2.forEach((v, i) => grid2El.appendChild(createCell(v, i, 2)));
     };
 
-    const createCell = (val, index, player) => {
-        const cell = document.createElement('div');
-        cell.className = 'cell';
-        if (val === "FREE") {
-            cell.classList.add('free', 'marked');
-            cell.innerText = "⭐";
-        } else {
-            cell.innerText = val;
-        }
-        cell.addEventListener('click', () => handleMark(index, player));
-        return cell;
-    };
-
-    const getLetter = (n) => {
-        if(n<=15) return 'B'; if(n<=30) return 'I'; if(n<=45) return 'N'; if(n<=60) return 'G'; return 'O';
-    };
-
     const drawNumber = () => {
         if (!gameActive) return;
-        const checkOubli = (board, marked) => board.some((v, i) => v === currentDrawnNumber && !marked[i]);
-        if (checkOubli(board1, marked1) || checkOubli(board2, marked2)) {
+        const oubli = (b, m) => b.some((v, i) => v === currentDrawnNumber && !m[i]);
+        if (oubli(board1, marked1) || oubli(board2, marked2)) {
             statusMsg.innerText = "⚠️ Quelqu'un a oublié de cocher !";
             drawBtn.classList.add('error-shake');
             setTimeout(() => drawBtn.classList.remove('error-shake'), 400);
             return;
         }
 
-        if (drawnNumbersHistory.length >= 75) { statusMsg.innerText = "Toutes les boules sont sorties !"; return; }
-
-        let n;
-        do { n = Math.floor(Math.random() * 75) + 1; } while (drawnNumbersHistory.includes(n));
-
+        if (drawnNumbersHistory.length >= 75) return;
+        let n; do { n = Math.floor(Math.random() * 75) + 1; } while (drawnNumbersHistory.includes(n));
         currentDrawnNumber = n;
         drawnNumbersHistory.push(n);
         
-        letSpan.innerText = getLetter(n);
-        numSpan.innerText = n;
-        statusMsg.innerText = `${getLetter(n)}-${n} !`;
+        const L = (n) => n<=15?'B':n<=30?'I':n<=45?'N':n<=60?'G':'O';
+        letSpan.innerText = L(n); numSpan.innerText = n;
+        statusMsg.innerText = `${L(n)}-${n} !`;
 
         Array.from(calledListEl.children).forEach(b => b.classList.remove('latest'));
-        const miniBall = document.createElement('div');
-        miniBall.className = 'mini-ball latest';
-        miniBall.innerHTML = `<span class="ball-letter">${getLetter(n)}</span><span>${n}</span>`;
-        calledListEl.prepend(miniBall);
+        const mb = document.createElement('div');
+        mb.className = 'mini-ball latest';
+        mb.innerHTML = `<span>${L(n)}</span><span>${n}</span>`;
+        calledListEl.prepend(mb);
     };
 
     const handleMark = (index, player) => {
         if (!gameActive || currentDrawnNumber === null) return;
-        const board = (player === 1) ? board1 : board2;
-        const marked = (player === 1) ? marked1 : marked2;
-        const grid = (player === 1) ? grid1El : grid2El;
+        const b = player === 1 ? board1 : board2;
+        const m = player === 1 ? marked1 : marked2;
+        const g = player === 1 ? grid1El : grid2El;
 
-        if (board[index] === currentDrawnNumber && !marked[index]) {
-            marked[index] = true;
-            grid.children[index].classList.add('marked');
-            checkWinner(player);
+        if (b[index] === currentDrawnNumber && !m[index]) {
+            m[index] = true;
+            g.children[index].classList.add('marked');
+            checkAllWinners();
         }
     };
 
-    const checkWinner = (player) => {
-        const marked = (player === 1) ? marked1 : marked2;
-        const grid = (player === 1) ? grid1El : grid2El;
-        const win = winConditions.find(cond => cond.every(idx => marked[idx]));
+    const checkAllWinners = () => {
+        const winsP1 = winConditions.filter(cond => cond.every(idx => marked1[idx]));
+        const winsP2 = winConditions.filter(cond => cond.every(idx => marked2[idx]));
 
-        if (win) {
+        const p1HasBingo = winsP1.length > 0;
+        const p2HasBingo = winsP2.length > 0;
+
+        if (p1HasBingo || p2HasBingo) {
             gameActive = false;
-            win.forEach(i => grid.children[i].classList.add('win'));
-            if (player === 1) { scoreP1++; scoreP1El.innerText = scoreP1; statusMsg.innerText = "BINGO ! Victoire J1 !"; }
-            else { scoreP2++; scoreP2El.innerText = scoreP2; statusMsg.innerText = "BINGO ! Victoire J2 !"; }
-            confetti({ particleCount: 200, spread: 90, origin: { y: 0.6 } });
+
+            if (p1HasBingo) {
+                const cells1 = grid1El.querySelectorAll('.cell');
+                winsP1.forEach(line => line.forEach(idx => cells1[idx].classList.add('win')));
+            }
+            if (p2HasBingo) {
+                const cells2 = grid2El.querySelectorAll('.cell');
+                winsP2.forEach(line => line.forEach(idx => cells2[idx].classList.add('win')));
+            }
+
+            if (p1HasBingo && p2HasBingo) {
+                statusMsg.innerText = "🤝 ÉGALITÉ ! Les deux ont BINGO !";
+                scoreP1++; scoreP2++;
+            } else if (p1HasBingo) {
+                statusMsg.innerText = "BINGO J1 !";
+                scoreP1++;
+            } else if (p2HasBingo) {
+                statusMsg.innerText = "BINGO J2 !";
+                scoreP2++;
+            }
+
+            scoreP1El.innerText = scoreP1;
+            scoreP2El.innerText = scoreP2;
+            confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 } });
         }
     };
 
@@ -144,16 +144,13 @@ document.addEventListener('DOMContentLoaded', () => {
         gameActive = true; currentDrawnNumber = null; drawnNumbersHistory = [];
         marked1 = Array(25).fill(false); marked2 = Array(25).fill(false);
         marked1[12] = true; marked2[12] = true;
-        numSpan.innerText = "?"; letSpan.innerText = "";
-        calledListEl.innerHTML = '';
-        statusMsg.innerText = "Nouvelle partie !";
-        board1 = generateTraditionalCard();
-        board2 = generateTraditionalCard();
+        numSpan.innerText = "?"; letSpan.innerText = ""; calledListEl.innerHTML = '';
+        statusMsg.innerText = "Prêt ?";
+        board1 = generateTraditionalCard(); board2 = generateTraditionalCard();
         renderGrids();
     };
 
     drawBtn.addEventListener('click', drawNumber);
     document.getElementById('reset-button').addEventListener('click', resetGame);
-    window.addEventListener('keydown', (e) => { if(e.key.toLowerCase() === 'r') resetGame(); });
     resetGame();
 });
