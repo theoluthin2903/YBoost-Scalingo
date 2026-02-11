@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeSwitcher = document.getElementById('theme-switcher');
     const board = document.getElementById('board');
     const statusMsg = document.getElementById('status-message');
+    const sound = new Audio('/static/correct.mp3');
+    sound.preload = 'auto';
 
     let dictionary = [];
     let targetWord = "";
@@ -12,31 +14,36 @@ document.addEventListener('DOMContentLoaded', () => {
     let gameActive = false;
     let foundLetters = [];
 
-    const soundCorrect = new Audio('/static/correct.mp3');
+    function playCorrectSound() {
+    const s = sound.cloneNode();
+    s.currentTime = 0;
+    s.volume = 0.5;
+    s.play().catch(e => {});
+}
 
     async function loadDictionary() {
-        try {
-            statusMsg.innerText = "Chargement du dictionnaire...";
-            const response = await fetch('/static/dictionary.csv');
-            const text = await response.text();
-            
-            dictionary = text.split('\n')
-                .map(mot => mot.trim())
-                .filter(mot => mot.length >= 6 && mot.length <= 9)
-                .filter(mot => /^[a-zA-Zàâäéèêëïîôöùûüç-]+$/.test(mot))
-                .map(mot => mot.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase());
+    try {
+        statusMsg.innerText = "Chargement du dictionnaire...";
+        const response = await fetch('/static/dictionary.csv');
+        const text = await response.text();
+        
+        dictionary = text.split('\n')
+            .map(mot => mot.trim())
+            .filter(mot => mot.length >= 6 && mot.length <= 9)
+            .filter(mot => /^[a-zA-Zàâäéèêëïîôöùûüç-]+$/.test(mot))
+            .map(mot => mot.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase());
 
-            dictionary = [...new Set(dictionary)];
-            console.log(dictionary.length + " mots chargés !");
-            initGame();
-        } catch (error) {
-            statusMsg.innerText = "Erreur de dictionnaire";
-            console.error(error);
-        }
-    }
+        dictionary = [...new Set(dictionary)];
+
+        console.log(dictionary.length + " mots chargés !");
+        initGame();
+    } catch (error) {
+        statusMsg.innerText = "Erreur de dictionnaire";
+        console.error(error);
+      }
+   }
 
     function initGame() {
-        if (dictionary.length === 0) return;
         targetWord = dictionary[Math.floor(Math.random() * dictionary.length)];
         wordLength = targetWord.length;
         attempts = 0;
@@ -48,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
         board.innerHTML = "";
         board.style.setProperty('--cols', wordLength);
         statusMsg.innerText = `Mot de ${wordLength} lettres`;
+        statusMsg.style.color = "var(--text-main)";
 
         for (let i = 0; i < maxAttempts; i++) {
             const row = document.createElement('div');
@@ -59,36 +67,37 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             board.appendChild(row);
         }
-        updateDisplay();
+        fillRowWithFoundLetters();
     }
 
-    function updateDisplay() {
+    function fillRowWithFoundLetters() {
         const row = board.children[attempts];
-        if (!row) return;
-        for (let i = 0; i < wordLength; i++) {
-            const tile = row.children[i];
-            if (currentGuess[i]) {
-                tile.innerText = currentGuess[i];
-                tile.style.opacity = "1";
-            } else if (foundLetters[i]) {
-                tile.innerText = foundLetters[i];
-                tile.style.opacity = "0.5";
-            } else {
-                tile.innerText = ".";
-                tile.style.opacity = "0.3";
-            }
-        }
+        foundLetters.forEach((letter, i) => {
+            if (letter) row.children[i].innerText = letter;
+        });
     }
 
     function submitGuess() {
-        if (!gameActive || currentGuess.length !== wordLength) return;
-
+        if (currentGuess.length !== wordLength) return;
         if (!dictionary.includes(currentGuess)) {
-            statusMsg.innerText = "MOT INCONNU";
+            statusMsg.innerText = "MOT INCONNU !";
+            statusMsg.style.color = "#f39c12";
+            gameActive = false;
+            animateIncorrectWord();
             return;
         }
 
         processResult();
+    }
+
+    function animateIncorrectWord() {
+        const row = board.children[attempts];
+        for (let i = 0; i < wordLength; i++) {
+            setTimeout(() => {
+                row.children[i].classList.add('absent');
+                if (i === wordLength - 1) finalizeTurn();
+            }, i * 100);
+        }
     }
 
     function processResult() {
@@ -97,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const guessArr = currentGuess.split('');
         const results = Array(wordLength).fill('absent');
         const tempTarget = targetWord.split('');
-    
+
         guessArr.forEach((l, i) => {
             if (l === targetWord[i]) {
                 results[i] = 'correct';
@@ -118,42 +127,51 @@ document.addEventListener('DOMContentLoaded', () => {
                 const tile = row.children[i];
                 const status = results[i];
                 if (status === 'correct') {
-                    soundCorrect.cloneNode().play().catch(() => {});
+                    const s = sound.cloneNode();
+                    s.volume = 1;
+                    s.play().catch(e => console.log("Audio bloqué par le navigateur"));
                 }
-
                 tile.innerText = letter;
                 tile.className = `tile flip ${status}`;
-                tile.style.opacity = "1";
-
-                if (i === wordLength - 1) {
-                    setTimeout(finalizeTurn, 500);
-                }
-            }, i * 250);
+                if (i === wordLength - 1) setTimeout(finalizeTurn, 500);
+            }, i * 150);
         });
     }
 
     function finalizeTurn() {
         if (currentGuess === targetWord) {
-            statusMsg.innerText = "GAGNÉ ! 🎉";
+            statusMsg.innerText = `GAGNÉ ! 🎉 : Le mot à trouver était bien ${targetWord}`;
+            confetti();
+            confetti();
+            confetti();
         } else {
             attempts++;
             currentGuess = "";
             if (attempts >= maxAttempts) {
-                statusMsg.innerText = "PERDU : " + targetWord;
-                gameActive = false;
+                revealFullRedWord();
             } else {
                 gameActive = true;
-                updateDisplay();
+                statusMsg.innerText = "";
+                fillRowWithFoundLetters();
             }
         }
     }
 
-    window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            initGame();
-            return;
-        }
+    function revealFullRedWord() {
+        statusMsg.innerText = "PERDU... le mot à trouver était : " + targetWord;
+        const row = board.children[attempts - 1 ] || board.children[maxAttempts - 1];
+        targetWord.split('').forEach((letter, i) => {
+            setTimeout(() => {
+                playCorrectSound();
+                const tile = row.children[i];
+                tile.innerText = letter;
+                tile.className = 'tile flip correct';
+            }, i * 150);
+        });
+    }
 
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') { initGame(); return; }
         if (!gameActive) return;
 
         if (e.key === 'Enter') {
@@ -169,6 +187,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    function updateDisplay() {
+    const row = board.children[attempts];
+    for (let i = 0; i < wordLength; i++) {
+        const tile = row.children[i];
+        if (currentGuess[i]) {
+            tile.innerText = currentGuess[i];
+            tile.style.opacity = "1";
+        } 
+        else if (foundLetters[i]) {
+            tile.innerText = foundLetters[i];
+            tile.style.opacity = "0.5"; 
+        } 
+        else {
+            tile.innerText = "";
+        }
+    }
+}
     loadDictionary();
-    initGame();
 });
