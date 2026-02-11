@@ -195,15 +195,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    const sounds = {
-    correct: new Audio('/static/correct.mp3'),
-    present: new Audio('/static/present.mp3'),
-    absent: new Audio('/static/absent.mp3')
+    const sound = {
+    correct: new Audio('/static/correct.mp3')
     };
 
     function playSound(type) {
-    if (sounds[type]) {
-        const soundClone = sounds[type].cloneNode(); // Permet de jouer le son en rafale
+    if (sound[type]) {
+        const soundClone = sound[type].cloneNode();
         soundClone.play().catch(e => console.log("Audio bloqué par le navigateur"));
     }
 }
