@@ -1,195 +1,199 @@
 document.addEventListener('DOMContentLoaded', () => {
     const themeSwitcher = document.getElementById('theme-switcher');
-    const applyTheme = (t) => {
-        document.body.className = t + '-mode';
-        themeSwitcher.textContent = t === 'light' ? '🌙' : '☀️';
-    };
-    applyTheme(localStorage.getItem('theme') || 'dark');
-    themeSwitcher.addEventListener('click', () => {
-        const next = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
-        applyTheme(next);
-        localStorage.setItem('theme', next);
-    });
-
-    const grid1El = document.getElementById('grid-p1');
-    const grid2El = document.getElementById('grid-p2');
-    const drawBtn = document.getElementById('draw-button');
-    const numSpan = document.getElementById('number-span');
-    const letSpan = document.getElementById('letter-span');
+    const board = document.getElementById('board');
     const statusMsg = document.getElementById('status-message');
-    const scoreP1El = document.getElementById('score-p1');
-    const scoreP2El = document.getElementById('score-p2');
-    const calledListEl = document.getElementById('called-numbers-list');
 
-    let scoreP1 = 0, scoreP2 = 0;
-    let currentDrawnNumber = null;
-    let drawnNumbersHistory = [];
-    let gameActive = true;
-    let board1 = [], board2 = [];
-    let marked1 = Array(25).fill(false);
-    let marked2 = Array(25).fill(false);
+    let dictionary = [];
+    let targetWord = "";
+    let currentGuess = "";
+    let attempts = 0;
+    const maxAttempts = 6;
+    let wordLength = 0;
+    let gameActive = false;
+    let foundLetters = [];
 
-    const winConditions = [
-        [0,1,2,3,4], [5,6,7,8,9], [10,11,12,13,14], [15,16,17,18,19], [20,21,22,23,24],
-        [0,5,10,15,20], [1,6,11,16,21], [2,7,12,17,22], [3,8,13,18,23], [4,9,14,19,24],
-        [0,6,12,18,24], [4,8,12,16,20]
-    ];
-
-    const getUniqueRandoms = (count, min, max) => {
-        let nums = new Set();
-        while(nums.size < count) nums.add(Math.floor(Math.random() * (max - min + 1)) + min);
-        return Array.from(nums);
-    };
-
-    const generateTraditionalCard = () => {
-        let card = Array(25).fill(0);
-        let b = getUniqueRandoms(5, 1, 15);
-        let i = getUniqueRandoms(5, 16, 30);
-        let n = getUniqueRandoms(4, 31, 45);
-        let g = getUniqueRandoms(5, 46, 60);
-        let o = getUniqueRandoms(5, 61, 75);
-
-        for(let r = 0; r < 5; r++) {
-            card[r*5 + 0] = b[r];
-            card[r*5 + 1] = i[r];
-            if (r < 2) card[r*5 + 2] = n[r];
-            else if (r === 2) card[r*5 + 2] = "FREE";
-            else card[r*5 + 2] = n[r-1];
-            card[r*5 + 3] = g[r];
-            card[r*5 + 4] = o[r];
-        }
-        return card;
-    };
-
-    const getLetter = (n) => {
-        if(n<=15) return 'B'; if(n<=30) return 'I'; if(n<=45) return 'N'; if(n<=60) return 'G'; return 'O';
-    };
-
-    const renderGrids = () => {
-        grid1El.innerHTML = ''; grid2El.innerHTML = '';
-        board1.forEach((v, i) => grid1El.appendChild(createCell(v, i, 1)));
-        board2.forEach((v, i) => grid2El.appendChild(createCell(v, i, 2)));
-    };
-
-    const createCell = (val, index, player) => {
-        const cell = document.createElement('div');
-        cell.className = 'cell';
-        if (val === "FREE") {
-            cell.classList.add('free', 'marked');
-            cell.innerText = "⭐";
-        } else {
-            cell.innerText = val;
-        }
-        cell.addEventListener('click', () => handleMark(index, player));
-        return cell;
-    };
-
-    const drawNumber = () => {
-        if (!gameActive) return;
-
-        const checkOubli = (board, marked) => board.some((v, i) => v === currentDrawnNumber && !marked[i]);
-        if (checkOubli(board1, marked1)) {
-            statusMsg.innerText = "⚠️ Joueur 1 a oublié de cocher !";
-            drawBtn.classList.add('error-shake');
-            setTimeout(() => drawBtn.classList.remove('error-shake'), 400);
-            return;
-        }
-         if (checkOubli(board2, marked2)) {
-            statusMsg.innerText = "⚠️ Joueur 2 a oublié de cocher !";
-            drawBtn.classList.add('error-shake');
-            setTimeout(() => drawBtn.classList.remove('error-shake'), 400);
-            return;
-        }
-
-        if (drawnNumbersHistory.length >= 75) return;
-
-        let n;
-        do { n = Math.floor(Math.random() * 75) + 1; } while (drawnNumbersHistory.includes(n));
-
-        currentDrawnNumber = n;
-        drawnNumbersHistory.push(n);
+    async function loadDictionary() {
+    try {
+        statusMsg.innerText = "Chargement du dictionnaire...";
+        const response = await fetch('/static/dictionary.csv');
+        const text = await response.text();
         
-        letSpan.innerText = getLetter(n);
-        numSpan.innerText = n;
-        statusMsg.innerText = `${getLetter(n)}-${n} !`;
+        dictionary = text.split('\n')
+            .map(mot => mot.trim())
+            .filter(mot => mot.length >= 6 && mot.length <= 9)
+            .filter(mot => /^[a-zA-Zàâäéèêëïîôöùûüç-]+$/.test(mot))
+            .map(mot => mot.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase());
 
-        Array.from(calledListEl.children).forEach(b => b.classList.remove('latest'));
-        const miniBall = document.createElement('div');
-        miniBall.className = 'mini-ball latest';
-        miniBall.innerHTML = `<span class="ball-letter">${getLetter(n)}</span><span>${n}</span>`;
-        calledListEl.prepend(miniBall);
-    };
+        dictionary = [...new Set(dictionary)];
 
-    const handleMark = (index, player) => {
-        if (!gameActive || currentDrawnNumber === null) return;
-        const b = (player === 1) ? board1 : board2;
-        const m = (player === 1) ? marked1 : marked2;
-        const g = (player === 1) ? grid1El : grid2El;
+        console.log(dictionary.length + " mots chargés !");
+        initGame();
+    } catch (error) {
+        statusMsg.innerText = "Erreur de dictionnaire";
+        console.error(error);
+      }
+   }
 
-        if (b[index] === currentDrawnNumber && !m[index]) {
-            m[index] = true;
-            g.children[index].classList.add('marked');
-            checkWinners();
-        }
-    };
-
-    const checkWinners = () => {
-        const winsP1 = winConditions.filter(cond => cond.every(idx => marked1[idx]));
-        const winsP2 = winConditions.filter(cond => cond.every(idx => marked2[idx]));
-
-        if (winsP1.length > 0 || winsP2.length > 0) {
-            gameActive = false;
-
-            if (winsP1.length > 0) {
-                winsP1.forEach(line => line.forEach(i => grid1El.children[i].classList.add('win')));
-                scoreP1++;
-            }
-            if (winsP2.length > 0) {
-                winsP2.forEach(line => line.forEach(i => grid2El.children[i].classList.add('win')));
-                scoreP2++;
-            }
-
-            if (winsP1.length > 0 && winsP2.length > 0) {
-                statusMsg.innerText = "🤝 ÉGALITÉ !";
-            } else {
-                statusMsg.innerText = winsP1.length > 0 ? "BINGO ! Victoire J1 !" : "BINGO ! Victoire J2 !";
-            }
-
-            scoreP1El.innerText = scoreP1;
-            scoreP2El.innerText = scoreP2;
-            confetti({ particleCount: 200, spread: 90, origin: { y: 0.6 } });
-        }
-    };
-
-    const resetGame = () => {
+    function initGame() {
+        targetWord = dictionary[Math.floor(Math.random() * dictionary.length)];
+        wordLength = targetWord.length;
+        attempts = 0;
+        currentGuess = "";
         gameActive = true;
-        currentDrawnNumber = null;
-        drawnNumbersHistory = [];
-        marked1 = Array(25).fill(false);
-        marked2 = Array(25).fill(false);
-        marked1[12] = true;
-        marked2[12] = true;
-        
-        numSpan.innerText = "?";
-        letSpan.innerText = "";
-        calledListEl.innerHTML = '';
-        statusMsg.innerText = "Nouvelle partie !";
-        
-        board1 = generateTraditionalCard();
-        board2 = generateTraditionalCard();
-        renderGrids();
-    };
+        foundLetters = Array(wordLength).fill(null);
+        foundLetters[0] = targetWord[0];
 
-    drawBtn.addEventListener('click', () => {
-        drawNumber();
-        drawBtn.blur();
-    });
+        board.innerHTML = "";
+        board.style.setProperty('--cols', wordLength);
+        statusMsg.innerText = `Mot de ${wordLength} lettres`;
+        statusMsg.style.color = "var(--text-main)";
+
+        for (let i = 0; i < maxAttempts; i++) {
+            const row = document.createElement('div');
+            row.className = 'row';
+            for (let j = 0; j < wordLength; j++) {
+                const tile = document.createElement('div');
+                tile.className = 'tile';
+                row.appendChild(tile);
+            }
+            board.appendChild(row);
+        }
+        fillRowWithFoundLetters();
+    }
+
+    function fillRowWithFoundLetters() {
+        const row = board.children[attempts];
+        foundLetters.forEach((letter, i) => {
+            if (letter) row.children[i].innerText = letter;
+        });
+    }
+
+    function submitGuess() {
+        if (currentGuess.length !== wordLength) return;
+        if (!dictionary.includes(currentGuess)) {
+            statusMsg.innerText = "MOT INCONNU !";
+            statusMsg.style.color = "#f39c12";
+            gameActive = false;
+            animateIncorrectWord();
+            return;
+        }
+
+        processResult();
+    }
+
+    function animateIncorrectWord() {
+        const row = board.children[attempts];
+        for (let i = 0; i < wordLength; i++) {
+            setTimeout(() => {
+                row.children[i].classList.add('absent');
+                if (i === wordLength - 1) finalizeTurn();
+            }, i * 100);
+        }
+    }
+
+    function processResult() {
+        gameActive = false;
+        const row = board.children[attempts];
+        const guessArr = currentGuess.split('');
+        const results = Array(wordLength).fill('absent');
+        const tempTarget = targetWord.split('');
+
+        guessArr.forEach((l, i) => {
+            if (l === targetWord[i]) {
+                results[i] = 'correct';
+                foundLetters[i] = l;
+                tempTarget[i] = null;
+            }
+        });
+
+        guessArr.forEach((l, i) => {
+            if (results[i] !== 'correct' && tempTarget.includes(l)) {
+                results[i] = 'present';
+                tempTarget[tempTarget.indexOf(l)] = null;
+            }
+        });
+
+        guessArr.forEach((letter, i) => {
+            setTimeout(() => {
+                const tile = row.children[i];
+                tile.innerText = letter;
+                tile.className = `tile flip ${results[i]}`;
+                if (i === wordLength - 1) setTimeout(finalizeTurn, 500);
+            }, i * 150);
+        });
+    }
+
+    function finalizeTurn() {
+        if (currentGuess === targetWord) {
+            statusMsg.innerText = "GAGNÉ ! 🎉";
+            confetti();
+        } else {
+            attempts++;
+            currentGuess = "";
+            if (attempts >= maxAttempts) {
+                revealFullRedWord();
+            } else {
+                gameActive = true;
+                statusMsg.innerText = "";
+                fillRowWithFoundLetters();
+            }
+        }
+    }
+
+    function revealFullRedWord() {
+        statusMsg.innerText = "PERDU...";
+        const row = board.children[maxAttempts - 1];
+        targetWord.split('').forEach((letter, i) => {
+            setTimeout(() => {
+                const tile = row.children[i];
+                tile.innerText = letter;
+                tile.className = 'tile flip correct';
+            }, i * 150);
+        });
+    }
 
     window.addEventListener('keydown', (e) => {
-        if (e.key === 'R' || e.key === 'r') {
-            resetGame();
+        if (e.key === 'Escape') { initGame(); return; }
+        if (!gameActive) return;
+
+        if (e.key === 'Enter') {
+            submitGuess();
+        } else if (e.key === 'Backspace') {
+            currentGuess = currentGuess.slice(0, -1);
+            updateDisplay();
+        } else if (e.key.length === 1 && /^[a-z]$/i.test(e.key)) {
+            if (currentGuess.length < wordLength) {
+                currentGuess += e.key.toUpperCase();
+                updateDisplay();
+            }
         }
     });
 
-    resetGame();
+    function updateDisplay() {
+        const row = board.children[attempts];
+        for (let i = 0; i < wordLength; i++) {
+            row.children[i].innerText = currentGuess[i] || foundLetters[i] || "";
+        }
+    }
+
+    function updateDisplay() {
+    const row = board.children[attempts];
+    for (let i = 0; i < wordLength; i++) {
+        const tile = row.children[i];
+        if (currentGuess[i]) {
+            tile.innerText = currentGuess[i];
+            tile.style.opacity = "1";
+        } 
+        else if (foundLetters[i]) {
+            tile.innerText = foundLetters[i];
+            tile.style.opacity = "0.5"; 
+        } 
+        else {
+            tile.innerText = "";
+        }
+    }
+}
+
+    loadDictionary();
+    initGame();
 });

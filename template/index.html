@@ -3,66 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bingo Battle - 5x5 Local</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <title>MOTUS</title>
+    <link rel="stylesheet" href="static/style.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <script src="/static/script.js" defer></script>
+    <script src="static/script.js" defer></script>
 </head>
 <body class="dark-mode">
-    <header>
-        <div class="header-top">
-            <h2>Bingo Battle 5x5</h2>
-            <button id="theme-switcher" class="theme-circle">☀️</button>
-        </div>
-        <div class="separator"></div>
-    </header>
+   <header>
+       <div class="header-container">
+           <div class="header-spacer"></div> 
+           <h2 id="logo-motus">MOTUS</h2>
+       </div>
+   </header>
 
-    <main class="container">
-        <div class="main-content-wrapper">
-            
-            <section class="left-panel game-area"> 
-                <div class="score-board">
-                    <div class="score-display">
-                        <span class="player-name">J1</span>
-                        <div class="score-wrapper">
-                            <span id="score-p1">0</span>
-                            <span class="score-divider">-</span>
-                            <span id="score-p2">0</span>
-                        </div>
-                        <span class="player-name">J2</span>
-                    </div>
-                </div>
-
-                <div class="draw-zone">
-                    <div id="current-number" class="current-number">
-                        <span id="letter-span"></span><span id="number-span">?</span>
-                    </div>
-                    <button id="draw-button" class="draw-button">Tirer (B-I-N-G-O 1-75)</button>
-                </div>
-
-                <div id="status-message" class="status-message">Cliquez sur "Tirer" pour commencer !</div>
-
-                <div class="bingo-layout">
-                    <div class="player-area">
-                        <p>Grille Joueur 1</p>
-                        <div class="grid-header"><span>B</span><span>I</span><span>N</span><span>G</span><span>O</span></div>
-                        <div class="bingo-grid" id="grid-p1"></div>
-                    </div>
-                    <div class="player-area">
-                        <p>Grille Joueur 2</p>
-                        <div class="grid-header"><span>B</span><span>I</span><span>N</span><span>G</span><span>O</span></div>
-                        <div class="bingo-grid" id="grid-p2"></div>
-                    </div>
-                </div>
-            </section>
-
-            <aside class="right-panel sidebar">
-                <h3>Boules Tirées</h3>
-                <div id="called-numbers-list" class="called-numbers-grid">
-                    </div>
-            </aside>
-
-        </div>
+    <main class="game-container">
+        <div id="board"></div>
+        <div id="status-message" class="status-message">Devinez le mot !</div>
     </main>
 </body>
 </html>
