@@ -2,8 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeSwitcher = document.getElementById('theme-switcher');
     const board = document.getElementById('board');
     const statusMsg = document.getElementById('status-message');
-    const sound = new Audio('/static/correct.mp3');
-    sound.preload = 'auto';
 
     let dictionary = [];
     let targetWord = "";
@@ -13,13 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let wordLength = 0;
     let gameActive = false;
     let foundLetters = [];
-
-    function playCorrectSound() {
-    const s = sound.cloneNode();
-    s.currentTime = 0;
-    s.volume = 0.5;
-    s.play().catch(e => {});
-}
 
     async function loadDictionary() {
     try {
@@ -126,11 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 const tile = row.children[i];
                 const status = results[i];
-                if (status === 'correct') {
-                    const s = sound.cloneNode();
-                    s.volume = 1;
-                    s.play().catch(e => console.log("Audio bloqué par le navigateur"));
-                }
                 tile.innerText = letter;
                 tile.className = `tile flip ${status}`;
                 if (i === wordLength - 1) setTimeout(finalizeTurn, 500);
@@ -162,7 +148,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const row = board.children[attempts - 1 ] || board.children[maxAttempts - 1];
         targetWord.split('').forEach((letter, i) => {
             setTimeout(() => {
-                playCorrectSound();
                 const tile = row.children[i];
                 tile.innerText = letter;
                 tile.className = 'tile flip correct';
