@@ -116,8 +116,10 @@ document.addEventListener('DOMContentLoaded', () => {
         guessArr.forEach((letter, i) => {
             setTimeout(() => {
                 const tile = row.children[i];
+                const status = results[i];
+                playSound(status);
                 tile.innerText = letter;
-                tile.className = `tile flip ${results[i]}`;
+                tile.className = `tile flip ${status}`;
                 if (i === wordLength - 1) setTimeout(finalizeTurn, 500);
             }, i * 250);
         });
@@ -192,6 +194,19 @@ document.addEventListener('DOMContentLoaded', () => {
             tile.innerText = "";
         }
     }
+
+    const sounds = {
+    correct: new Audio('/static/correct.mp3'),
+    present: new Audio('/static/present.mp3'),
+    absent: new Audio('/static/absent.mp3')
+    };
+
+    function playSound(type) {
+    if (sounds[type]) {
+        const soundClone = sounds[type].cloneNode(); // Permet de jouer le son en rafale
+        soundClone.play().catch(e => console.log("Audio bloqué par le navigateur"));
+    }
+}
 }
 
     loadDictionary();
