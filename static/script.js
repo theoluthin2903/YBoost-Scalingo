@@ -195,18 +195,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    const sound = {
-    correct: new Audio('/static/correct.mp3')
-    };
+    const sound = new Audio('/static/correct.mp3');
 
     function playSound(type) {
-    if (sound[type]) {
-        const soundClone = sound[type].cloneNode();
+    if (sound) {
+        const soundClone = sound.cloneNode();
         soundClone.play().catch(e => console.log("Audio bloqué par le navigateur"));
     }
+    }
 }
-}
-
     loadDictionary();
     initGame();
 });
