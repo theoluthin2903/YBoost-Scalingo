@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (i === wordLength - 1) {
                     setTimeout(finalizeTurn, 500);
                 }
-            }, i * 200);
+            }, i * 250);
         });
     }
 
