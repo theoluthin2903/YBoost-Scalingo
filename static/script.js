@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function finalizeTurn() {
         if (currentGuess === targetWord) {
-            statusMsg.innerText = "GAGNÉ ! 🎉";
+            statusMsg.innerText = `GAGNÉ ! 🎉 : Le mot à trouver était bien ${targetWord}`;
             confetti();
         } else {
             attempts++;
