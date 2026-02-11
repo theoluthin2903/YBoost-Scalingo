@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadDictionary() {
     try {
-        statusMsg.innerText = "Chargement du dictionnaire...";
         const response = await fetch('/static/dictionary.csv');
         const text = await response.text();
         
@@ -45,8 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         board.innerHTML = "";
         board.style.setProperty('--cols', wordLength);
-        statusMsg.innerText = `Mot de ${wordLength} lettres`;
-        statusMsg.style.color = "var(--text-main)";
 
         for (let i = 0; i < maxAttempts; i++) {
             const row = document.createElement('div');
@@ -71,13 +68,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function submitGuess() {
         if (currentGuess.length !== wordLength) return;
         if (!dictionary.includes(currentGuess)) {
-            statusMsg.innerText = "MOT INCONNU !";
-            statusMsg.style.color = "#f39c12";
             gameActive = false;
             animateIncorrectWord();
             return;
         }
-
         processResult();
     }
 
