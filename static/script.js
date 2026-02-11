@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 tile.innerText = letter;
                 tile.className = `tile flip ${results[i]}`;
                 if (i === wordLength - 1) setTimeout(finalizeTurn, 500);
-            }, i * 150);
+            }, i * 250);
         });
     }
 
