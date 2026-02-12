@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
    }
 
     function initGame() {
+        statusMsg.innerText = "";
         targetWord = dictionary[Math.floor(Math.random() * dictionary.length)];
         wordLength = targetWord.length;
         attempts = 0;
@@ -150,9 +151,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') { initGame(); statusMsg.style.display = "none"; return; }
+        if (e.key === 'Escape') { initGame(); return; }
         if (!gameActive) return;
-
         if (e.key === 'Enter') {
             submitGuess();
         } else if (e.key === 'Backspace') {
