@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') { initGame(); return; }
+        if (e.key === 'Escape') { initGame(); statusMsg.style.display = "none"; return; }
         if (!gameActive) return;
 
         if (e.key === 'Enter') {
