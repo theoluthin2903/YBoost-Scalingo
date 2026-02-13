@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function revealFullRedWord() {
-        statusMsg.innerText = "PERDU... le mot à trouver était : " + targetWord;
+        statusMsg.innerText = "PERDU... le mot à trouver était " + targetWord;
         const row = board.children[attempts - 1 ] || board.children[maxAttempts - 1];
         targetWord.split('').forEach((letter, i) => {
             setTimeout(() => {
