@@ -6,18 +6,8 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"net/url"
 	"os"
-	"strings"
-
-	_ "github.com/go-sql-driver/mysql"
 )
-
-type Todo struct {
-	ID    int    `json:"id"`
-	Title string `json:"title"`
-	Done  bool   `json:"done"`
-}
 
 func homeHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	if r.URL.Path != "/" {
