@@ -2,16 +2,35 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HELLO</title>
-    <link rel="stylesheet" href="static/style.css">
+    <title>Ma Todo List</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-   <header>
-       <div class="header-container">
-           <div class="header-spacer"></div> 
-           <h2 id="hello-world">HELLO WORLD !</h2>
-       </div>
-   </header>
+    <header>
+        <h1>Ma Todo List</h1>
+    </header>
+
+    <main>
+        <form action="/add" method="POST">
+            <input type="text" name="title" placeholder="Qu'avez-vous à faire ?" required>
+            <button type="submit">Ajouter</button>
+        </form>
+
+        <ul>
+            {{range .}}
+            <li class="todo-item {{if .Done}}completed{{end}}">
+                <span>{{.Title}}</span>
+                <div class="actions">
+                    <a href="/update?id={{.ID}}" class="btn-check">{{if .Done}}↩️{{else}}✅{{end}}</a>
+                    <a href="/delete?id={{.ID}}" class="btn-delete">❌</a>
+                </div>
+            </li>
+            {{else}}
+            <p>Aucune tâche pour le moment. Planifiez votre journée !</p>
+            {{end}}
+        </ul>
+    </main>
+
+    <script src="/static/srcipt.js"></script>
 </body>
 </html>

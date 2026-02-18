@@ -1,9 +1,170 @@
-body {
-    background-color: yellow;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --bg-body: #f0f2f5;
+    --container-bg: #ffffff;
+    --text-main: #333333;
+    --text-muted: #666666;
+    --item-bg: #f8f9fa;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    --border: #e0e0e0;
+}
+
+* {
     margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg-body);
+    color: var(--text-main);
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
-    min-height: 100vh;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+main {
+    background: var(--container-bg);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 40px;
+    width: 100%;
+    max-width: 600px;
+    transition: background 0.3s ease;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+h1 {
+    font-size: 2em;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+}
+
+form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+form input[type="text"] {
+    flex: 1;
+    padding: 15px 20px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-size: 16px;
+    background: var(--container-bg);
+    color: var(--text-main);
+    transition: all 0.3s ease;
+}
+
+form input[type="text"]:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+form button[type="submit"] {
+    padding: 15px 25px;
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+form button[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+ul {
+    list-style: none;
+}
+
+.todo-item {
+    background: var(--item-bg);
+    padding: 15px 20px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.3s ease;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-15px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.todo-item:hover {
+    transform: translateX(5px);
+    background: var(--border);
+}
+
+.todo-item span {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.todo-item.completed {
+    opacity: 0.6;
+}
+
+.todo-item.completed span {
+    text-decoration: line-through;
+    color: var(--text-muted);
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-check, .btn-delete {
+    text-decoration: none;
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-check {
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+}
+
+.btn-check:hover {
+    background: #667eea;
+    color: white;
+}
+
+.btn-delete {
+    background: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+}
+
+.btn-delete:hover {
+    background: #f44336;
+    color: white;
+    transform: scale(1.1);
 }
