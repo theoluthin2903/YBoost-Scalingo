@@ -6,8 +6,18 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
+	"strings"
+
+	_ "github.com/go-sql-driver/mysql"
 )
+
+type Todo struct {
+	ID    int    `json:"id"`
+	Title string `json:"title"`
+	Done  bool   `json:"done"`
+}
 
 func homeHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	if r.URL.Path != "/" {
@@ -17,7 +27,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 	var todos []Todo
 	if db != nil {
-		rows, err := db.Query("SELECT id, title, done FROM tests ORDER BY created_at DESC")
+		rows, err := db.Query("SELECT id, title, done FROM tests ORDER BY id ASC")
 		if err == nil {
 			defer rows.Close()
 			for rows.Next() {
@@ -39,33 +49,55 @@ func homeHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 }
 
 func addTodoHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
-	title := r.FormValue("title")
-	if title != "" {
-		_, err := db.Exec("INSERT INTO tests (title) VALUES (?)", title)
-		if err == nil {
-			log.Printf("[SUCCESS] Ajout de: %s", title)
-		}
+	if r.Method != http.MethodPost {
+		http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+		return
 	}
+
+	title := r.FormValue("title")
+	log.Printf("[DEBUG] Tentative d'ajout du titre : %s", title)
+
+	if title == "" {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	if db != nil {
+		_, err := db.Exec("INSERT INTO tests (title, done) VALUES (?, ?)", title, false)
+		if err != nil {
+			log.Printf("[ERREUR CRITIQUE SQL] : %v", err)
+			http.Error(w, "Erreur SQL : "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		log.Printf("[SUCCESS] Tâche ajoutée : %s", title)
+	} else {
+		log.Println("[ERREUR] DB est nil !")
+		http.Error(w, "Connexion DB perdue", http.StatusInternalServerError)
+		return
+	}
+
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func deleteTodoHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	id := r.URL.Query().Get("id")
-	_, err := db.Exec("DELETE FROM tests WHERE id = ?", id)
-	if err != nil {
-		log.Printf("[ERREUR] Échec de la suppression: %v", err)
-		http.Error(w, "Erreur suppression", http.StatusInternalServerError)
+	log.Printf("[DEBUG] Tentative de suppression de l'ID : %s", id)
+
+	if id == "" {
+		log.Println("[ERREUR] ID manquant dans l'URL")
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
-	var maxID int
-	err = db.QueryRow("SELECT COALESCE(MAX(id), 0) FROM tests").Scan(&maxID)
-	if err == nil {
-		query := fmt.Sprintf("ALTER TABLE tests AUTO_INCREMENT = %d", maxID+1)
-		db.Exec(query)
+	_, err := db.Exec("DELETE FROM tests WHERE id = ?", id)
+
+	if err != nil {
+		log.Printf("[ERREUR SQL] Échec de la suppression pour l'ID %s : %v", id, err)
+		http.Error(w, "Erreur suppression : "+err.Error(), http.StatusInternalServerError)
+		return
 	}
 
-	log.Printf("[SUCCESS] Tâche %s supprimée et compteur réinitialisé à %d", id, maxID+1)
+	log.Printf("[SUCCESS] Tâche %s supprimée", id)
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
@@ -73,9 +105,17 @@ func updateTodoHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	id := r.URL.Query().Get("id")
 	_, err := db.Exec("UPDATE tests SET done = NOT done WHERE id = ?", id)
 	if err == nil {
-		log.Printf("[SUCCESS] Toggle état ID: %s", id)
+		log.Printf("[SUCCESS] état ID modifié : %s", id)
 	}
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func getMySQLUrl() (string, error) {
+	dbUrl := os.Getenv("SCALINGO_MYSQL_URL")
+	if dbUrl != "" {
+		return parseURLtoDSN(dbUrl)
+	}
+	return "", nil
 }
 
 func parseURLtoDSN(urlStr string) (string, error) {
@@ -92,13 +132,18 @@ func parseURLtoDSN(urlStr string) (string, error) {
 }
 
 func openDB() (*sql.DB, error) {
-	dbUrl := os.Getenv("SCALINGO_MYSQL_URL")
+	dbUrl, err := getMySQLUrl()
 	if dbUrl == "" {
-		return nil, fmt.Errorf("DB SCALINGO_MYSQL_URL vide")
+		return nil, fmt.Errorf("SCALINGO_MYSQL_URL environment variable not set")
 	}
-	dsn, _ := parseURLtoDSN(dbUrl)
-	db, _ := sql.Open("mysql", dsn)
-	return db, db.Ping()
+	db, err := sql.Open("mysql", dbUrl)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open database connection: %v", err)
+	}
+	if err = db.Ping(); err != nil {
+		return nil, fmt.Errorf("failed to ping database: %v", err)
+	}
+	return db, nil
 }
 
 func main() {
