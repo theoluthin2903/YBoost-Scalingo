@@ -81,7 +81,7 @@ func addTodoHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 func deleteTodoHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	id := r.URL.Query().Get("id")
-	log.Printf("[DEBUG] Tentative de suppression de l'ID : %s", id)
+	log.Printf("[DEBUG] Tentative de suppression de l'ID %s", id)
 
 	if id == "" {
 		log.Println("[ERREUR] ID manquant dans l'URL")
@@ -105,7 +105,7 @@ func updateTodoHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	id := r.URL.Query().Get("id")
 	_, err := db.Exec("UPDATE tests SET done = NOT done WHERE id = ?", id)
 	if err == nil {
-		log.Printf("[SUCCESS] état ID modifié : %s", id)
+		log.Printf("[SUCCESS] état tâche à l'ID %s modifié !", id)
 	}
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
