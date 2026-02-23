@@ -55,7 +55,7 @@ func addTodoHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 
 	title := r.FormValue("title")
-	log.Printf("[DEBUG] Tentative d'ajout du titre : %s", title)
+	log.Printf("[DEBUG] Tentative d'ajout du titre %s", title)
 
 	if title == "" {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
