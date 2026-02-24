@@ -44,3 +44,11 @@ func parseURLtoDSN(urlStr string) (string, error) {
 	}
 	return fmt.Sprintf("%s:%s@%s%s", u.User.Username(), pass, host, u.Path), nil
 }
+
+func getMySQLUrl() (string, error) {
+	dbUrl := os.Getenv("SCALINGO_MYSQL_URL")
+	if dbUrl != "" {
+		return parseURLtoDSN(dbUrl)
+	}
+	return "", nil
+}

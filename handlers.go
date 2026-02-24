@@ -5,7 +5,6 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"os"
 )
 
 func homeHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
@@ -97,12 +96,4 @@ func updateTodoHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		log.Printf("[SUCCESS] état tâche à l'ID %s modifié !", id)
 	}
 	http.Redirect(w, r, "/", http.StatusSeeOther)
-}
-
-func getMySQLUrl() (string, error) {
-	dbUrl := os.Getenv("SCALINGO_MYSQL_URL")
-	if dbUrl != "" {
-		return parseURLtoDSN(dbUrl)
-	}
-	return "", nil
 }
