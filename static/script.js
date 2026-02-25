@@ -19,3 +19,23 @@ const deleteButtons = document.querySelectorAll('.btn-delete');
             window.location.href = updateLink;
         });
     });
+
+const btn = document.getElementById('theme-toggle');
+const body = document.body;
+
+if (localStorage.getItem('theme') === 'dark') {
+    body.classList.add('dark-theme');
+    btn.textContent = '☀️';
+}
+
+btn.addEventListener('click', () => {
+    body.classList.toggle('dark-theme');
+    
+    if (body.classList.contains('dark-theme')) {
+        localStorage.setItem('theme', 'dark');
+        btn.textContent = '☀️';
+    } else {
+        localStorage.setItem('theme', 'light');
+        btn.textContent = '🌙';
+    }
+});

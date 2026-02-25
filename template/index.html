@@ -6,11 +6,12 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+    <button id="theme-toggle">🌙</button>
+    <main>
     <header>
         <h1>Ma Todo List</h1>
     </header>
 
-    <main>
         <form action="/add" method="POST">
             <input type="text" name="title" placeholder="Qu'avez-vous à faire ?" required>
             <button type="submit">Ajouter</button>
@@ -31,6 +32,6 @@
         </ul>
     </main>
 
-    <script src="/static/srcipt.js"></script>
+    <script src="/static/script.js"></script>
 </body>
 </html>
