@@ -80,7 +80,7 @@ func deleteTodoHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	_, err := db.Exec("DELETE FROM tests WHERE id = ?", id)
 
 	if err != nil {
-		log.Printf("[ERREUR SQL] Échec de la suppression pour la tâche à l'ID %s : %v", id, err)
+		log.Printf("[ERREUR SQL] Échec de la suppression pour la tâche %s : %v", id, err)
 		http.Error(w, "Erreur suppression : "+err.Error(), http.StatusInternalServerError)
 		return
 	}
