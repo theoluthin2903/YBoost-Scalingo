@@ -43,7 +43,7 @@ func addTodoHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	}
 
 	title := r.FormValue("title")
-	log.Printf("[DEBUG] Tentative d'ajout du titre %s", title)
+	log.Printf("[DEBUG] Tentative d'ajout de la tâche %s", title)
 
 	if title == "" {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -57,7 +57,7 @@ func addTodoHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			http.Error(w, "Erreur SQL : "+err.Error(), http.StatusInternalServerError)
 			return
 		}
-		log.Printf("[SUCCESS] Tâche ajoutée : %s", title)
+		log.Printf("[SUCCESS] Tâche %s ajoutée", title)
 	} else {
 		log.Println("[ERREUR] DB est nil !")
 		http.Error(w, "Connexion DB perdue", http.StatusInternalServerError)
@@ -69,7 +69,7 @@ func addTodoHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 func deleteTodoHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	id := r.URL.Query().Get("id")
-	log.Printf("[DEBUG] Tentative de suppression de l'ID %s", id)
+	log.Printf("[DEBUG] Tentative de suppression de la tâche à l'ID %s", id)
 
 	if id == "" {
 		log.Println("[ERREUR] ID manquant dans l'URL")
@@ -80,7 +80,7 @@ func deleteTodoHandler(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	_, err := db.Exec("DELETE FROM tests WHERE id = ?", id)
 
 	if err != nil {
-		log.Printf("[ERREUR SQL] Échec de la suppression pour l'ID %s : %v", id, err)
+		log.Printf("[ERREUR SQL] Échec de la suppression pour la tâche à l'ID %s : %v", id, err)
 		http.Error(w, "Erreur suppression : "+err.Error(), http.StatusInternalServerError)
 		return
 	}

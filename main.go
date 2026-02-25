@@ -40,6 +40,6 @@ func main() {
 	if port == "" {
 		port = "3000"
 	}
-	log.Printf("[INFO] Serveur sur http://localhost:%s", port)
+	log.Printf("[INFO] Serveur démarré sur http://localhost:%s", port)
 	http.ListenAndServe(":"+port, nil)
 }
