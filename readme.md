@@ -15,10 +15,12 @@ Une application de liste de tâches (Todo List) performante et élégante, const
 ## 🚀 Installation et Lancement Local
 
 ### 1. Prérequis
+
 * **Go** installé sur votre machine.
 * **MySQL** opérationnel.
 
 ### 2. Configuration de la Base de Données
+
 Connectez-vous à votre MySQL Shell et créez la structure nécessaire :
 
 ```sql
